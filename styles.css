@@ -1,5 +1,8 @@
-/* Color Palette: Cozy Warm Oatmeal, Soft Charcoal, and Sage Accent */
+/* ==========================================================================
+   1. CORE THEME & COSMETIC VARIABLES
+   ========================================================================== */
 :root {
+    /* Cozy & Minimalist Base Tone */
     --bg-color: #fcfaf6;
     --text-main: #2b2a27;
     --text-muted: #6e6b64;
@@ -8,8 +11,24 @@
     --card-bg: #ffffff;
     --border-color: #e6dfd3;
     --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    /* DYNAMIC CATEGORY GLOW FALLBACKS (Overridden inline via HTML if needed) */
+    --vst-primary: #00f0ff;    /* Cyan */
+    --vst-secondary: #0055ff;  /* Electric Blue */
+    
+    --game-primary: #bd00ff;   /* Neon Purple */
+    --game-secondary: #ff007c; /* Hot Pink */
+    
+    --music-primary: #ffaa00;  /* Bright Gold */
+    --music-secondary: #ff3c00;/* Vivid Orange */
+    
+    --blog-primary: #00ff88;   /* Bright Mint */
+    --blog-secondary: #00a1ff;  /* Sky Blue */
 }
 
+/* ==========================================================================
+   2. GENERAL STRUCTURE & TYPOGRAPHY
+   ========================================================================== */
 body {
     background-color: var(--bg-color);
     color: var(--text-main);
@@ -25,7 +44,7 @@ body {
     padding: 0 2rem;
 }
 
-/* Hero Section & Header Grid */
+/* Header & Profile Section */
 .hero-container {
     max-width: 1100px;
     margin: 4rem auto 2rem auto;
@@ -50,7 +69,7 @@ h1 { font-size: 2.8rem; margin-bottom: 0.5rem; font-weight: 700; letter-spacing:
 .subtitle { font-size: 1.2rem; color: var(--accent); margin-top: 0; font-weight: 500; }
 .description { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 2rem; }
 
-/* Scrapbook Photo Grid */
+/* Scrapbook Grid Photos */
 .photo-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -69,7 +88,7 @@ h1 { font-size: 2.8rem; margin-bottom: 0.5rem; font-weight: 700; letter-spacing:
 
 .grid-photo:hover { transform: scale(1.02); }
 
-/* Buttons & Interactive Elements */
+/* Buttons & Navigation Tags */
 .btn {
     display: inline-block;
     padding: 0.6rem 1.2rem;
@@ -82,27 +101,151 @@ h1 { font-size: 2.8rem; margin-bottom: 0.5rem; font-weight: 700; letter-spacing:
     transition: all 0.2s ease;
 }
 
-.btn.primary { background-color: var(--text-main); color: var(--bg-color); }
+.btn.primary { background-color: var(--text-main); color: var(--bg-color); z-index: 5; position: relative; }
 .btn.primary:hover { background-color: var(--accent); }
 .btn.secondary { background-color: var(--accent-light); color: var(--text-main); margin-right: 0.5rem; }
 .btn.secondary:hover { background-color: var(--border-color); }
 
-/* Project Grid layout */
-.projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
+/* Decorative Elements */
+.divider { border: 0; border-top: 1px solid var(--border-color); margin: 4rem 0; }
+footer { text-align: center; padding: 4rem 0; color: var(--text-muted); font-size: 0.9rem; }
+
+/* ==========================================================================
+   3. FILTER SELECTOR WORKSPACE
+   ========================================================================== */
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
 }
 
-.project-card {
-    background: var(--card-bg);
+.filter-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.filter-btn:hover {
+    background-color: var(--accent-light);
+    border-color: var(--text-muted);
+}
+
+.filter-btn.active {
+    background-color: var(--text-main);
+    color: var(--bg-color);
+    border-color: var(--text-main);
+}
+
+/* ==========================================================================
+   4. LIQUID MOUSE-TRACKING GLOW GRID
+   ========================================================================== */
+.unified-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2.5rem;
+    transition: all 0.3s ease;
+}
+
+.hidden-item {
+    display: none !important;
+}
+
+/* Base interactive workspace item card */
+.grid-item {
+    position: relative;
+    background: var(--card-bg);
+    border-radius: 14px;
     padding: 1.5rem;
+    border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    z-index: 1;
+    overflow: hidden;
+
+    /* Runtime Mouse Positions provided by JavaScript */
+    --mouse-x: 50%;
+    --mouse-y: 50%;
+    
+    /* Default Overrides (assigned inside standard categories if missing from HTML inline markup) */
+    --override-color: var(--glow-white);
+    --secondary-color: rgba(255, 255, 255, 0);
+
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Fluid Radial Mask Excluder (Generates Neon Border Ring Tracking Cursor) */
+.grid-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 14px;
+    padding: 2px; /* Ring thickness boundary line */
+    
+    background: radial-gradient(
+        140px circle at var(--mouse-x) var(--mouse-y), 
+        #ffffff 0%, 
+        var(--override-color) 50%, 
+        var(--secondary-color) 80%,
+        transparent 100
+    );
+    
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+}
+
+/* Animated State Mutations upon Cursor Entry */
+.grid-item:hover {
+    transform: translateY(-5px);
+    border-color: transparent;
+    box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.03), 
+                0 0 22px -4px var(--override-color);
+}
+
+.grid-item:hover::before {
+    opacity: 1;
+}
+
+/* Card Content Structural Alignment */
+.card-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.blog-card-adjust {
+    justify-content: flex-start;
+}
+
+.blog-card-adjust h3 {
+    margin-top: 0.75rem;
 }
 
 .project-img {
@@ -113,28 +256,35 @@ h1 { font-size: 2.8rem; margin-bottom: 0.5rem; font-weight: 700; letter-spacing:
     background-color: var(--accent-light);
 }
 
-.project-tag {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--accent);
-    margin: 0.5rem 0;
-    font-weight: 600;
-}
-
 .project-card h3 { margin: 0.5rem 0; }
 .project-card p { color: var(--text-muted); font-size: 0.95rem; flex-grow: 1; }
-.project-actions { margin-top: 1.5rem; }
+.project-actions { margin-top: auto; padding-top: 1.5rem; }
 
-/* Blog Elements */
-.blog-list { margin-top: 2rem; }
-.blog-item { margin-bottom: 2.5rem; }
+/* Text Content Styling inside Blogs */
 .blog-date { font-size: 0.85rem; color: var(--text-muted); }
-.blog-item h3 { margin: 0.25rem 0; font-size: 1.3rem; }
-.blog-item h3 a { color: var(--text-main); text-decoration: none; }
-.blog-item h3 a:hover { color: var(--accent); }
-.blog-item p { color: var(--text-muted); margin: 0.5rem 0 0 0; }
+.read-link {
+    color: var(--text-main);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.95rem;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+.read-link:hover { color: var(--accent); }
 
-.divider { border: 0; border-top: 1px solid var(--border-color); margin: 4rem 0; }
-.center-box { text-align: center; margin-top: 3rem; }
-footer { text-align: center; padding: 4rem 0; color: var(--text-muted); font-size: 0.9rem; }
+/* Category Tags Visual Profiles */
+.item-tag {
+    align-self: flex-start;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    margin: 1rem 0 0.5rem 0;
+}
+
+.tag-vst { background-color: #e3f2fd; color: #0d47a1; }
+.tag-game { background-color: #ede7f6; color: #4a148c; }
+.tag-music { background-color: #efebe9; color: #4e342e; }
+.tag-blog { background-color: var(--accent-light); color: var(--accent); }

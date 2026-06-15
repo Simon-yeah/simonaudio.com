@@ -11,14 +11,11 @@
     <header class="hero-container">
         <div class="hero-grid">
             <div class="bio-content">
-                <h1>Simon Sound</h1>
-                <p class="subtitle">Sound Engineer, Audio Developer & Musician</p>
+                <h1>Simon Audio</h1>
+                <p class="subtitle">Sound Engineer, Audio Developer & Game Creator</p>
                 <p class="description">
-                    I'm Simon, an Audio Engineer and Developer, and Tonmeister Graduate.
-                    This website is a place where I put all my projects and passions for you to
-                    enjoy!
+                    Welcome! I explore the intersection of low-level digital signal processing, spatial audio synthesis, and interactive game design. Here you'll find the tools I've built, games I've programmed, and occasional notes on hardware and audio engineering. 
                 </p>
-                <p class="contact-links">Get in touch - contact@simonaudio.com</p>
                 <div class="contact-links">
                     <a href="mailto:your.email@example.com" class="btn secondary">Email</a>
                     <a href="https://github.com/yourusername" target="_blank" class="btn secondary">GitHub</a>
@@ -27,8 +24,8 @@
             </div>
 
             <div class="photo-grid">
-                <div class="grid-photo photo-1" style="background-image: url('static/images/profile-grid1.jpg');"></div>
-                <div class="grid-photo photo-2" style="background-image: url('static/images/profile-grid2.jpg');"></div>
+                <div class="grid-photo photo-1" style="background-image: url('static/images/homepage1.jpg');"></div>
+                <div class="grid-photo photo-2" style="background-image: url('static/images/homepage2.jpg');"></div>
                 <div class="grid-photo photo-3" style="background-image: url('static/images/profile-grid3.jpg');"></div>
                 <div class="grid-photo photo-4" style="background-image: url('static/images/profile-grid4.jpg');"></div>
             </div>
@@ -38,84 +35,140 @@
     <hr class="divider">
 
     <main class="content-wrapper">
-        <section id="projects">
-            <h2>Featured Projects</h2>
-            <div class="projects-grid">
-                
-                <div class="project-card">
+        
+        <section class="filter-container">
+            <span class="filter-label">Filter Projects:</span>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All Items</button>
+                <button class="filter-btn" data-filter="vst">VSTs & Plugins</button>
+                <button class="filter-btn" data-filter="games">Games</button>
+                <button class="filter-btn" data-filter="music">Audio & Live Sessions</button>
+                <button class="filter-btn" data-filter="blog">Blog</button>
+            </div>
+        </section>
+
+        <section id="workspace-grid" class="unified-grid">
+            
+            <div class="grid-item" data-category="vst" style="--override-color: var(--vst-primary); --secondary-color: var(--vst-secondary);">
+                <div class="card-content">
                     <img src="static/images/delayity-ui.jpg" alt="Delayity Plugin UI" class="project-img">
-                    <h3>Delayity Audio Plugin</h3>
-                    <p class="project-tag">C++ / JUCE Framework</p>
-                    <p>A custom digital audio delay plugin built featuring custom graphic image caching for smooth, responsive control components.</p>
+                    <span class="item-tag tag-vst">VST Plugin</span>
+                    <h3>Delayity Audio Delay</h3>
+                    <p>A digital delay plugin built with C++ and JUCE featuring custom asset image caching for smooth fader and knob graphics.</p>
                     <div class="project-actions">
                         <a href="static/downloads/Delayity_Installer.zip" class="btn primary" download>Download Plugin</a>
                     </div>
                 </div>
+            </div>
 
-                <div class="project-card">
+            <div class="grid-item" data-category="games" style="--override-color: var(--game-primary); --secondary-color: var(--game-secondary);">
+                <div class="card-content">
                     <img src="static/images/ty-climbs.jpg" alt="Ty Climbs Gameplay" class="project-img">
+                    <span class="item-tag tag-game">In-Browser Game</span>
                     <h3>Ty Climbs Guildford Cathedral</h3>
-                    <p class="project-tag">Godot Engine / GDScript</p>
-                    <p>An interactive game featuring custom movement vectors and automated animation state-machines.</p>
+                    <p>An interactive climbing game built in Godot utilizing automated state-machines and custom GDScript vector maths.</p>
                     <div class="project-actions">
                         <button onclick="openGame('static/games/ty-climbs/index.html')" class="btn primary">Play in New Window</button>
                     </div>
                 </div>
+            </div>
 
-                <div class="project-card">
+            <div class="grid-item" data-category="games" style="--override-color: #00ffcc; --secondary-color: #0055ff;">
+                <div class="card-content">
                     <img src="static/images/tihami-kart.jpg" alt="Tihami Kart Gameplay" class="project-img">
+                    <span class="item-tag tag-game">In-Browser Game</span>
                     <h3>Tihami Kart</h3>
-                    <p class="project-tag">Godot Engine / GDScript</p>
-                    <p>A fast-paced arcade racer exploring group AI behaviors and dynamic travel noise mechanics.</p>
+                    <p>A fast-paced arcade racer exploring group AI movement vectors and dynamic travel noise mechanics.</p>
                     <div class="project-actions">
                         <button onclick="openGame('static/games/tihami-kart/index.html')" class="btn primary">Play in New Window</button>
                     </div>
                 </div>
-
             </div>
-            
-            <div class="center-box">
-                <a href="https://audio.com/simonw" target="_blank" class="btn secondary outward">View more audio work on Audio.com →</a>
+
+            <div class="grid-item" data-category="music" style="--override-color: var(--music-primary); --secondary-color: var(--music-secondary);">
+                <div class="card-content">
+                    <img src="static/images/live-session-1.jpg" alt="Mixing Console Session" class="project-img">
+                    <span class="item-tag tag-music">Live Audio Session</span>
+                    <h3>Studio Session Tracking</h3>
+                    <p>Multi-track recording and live mixing capture showcases. Hosted as an organized project track pack on Audio.com.</p>
+                    <div class="project-actions">
+                        <a href="https://audio.com/simonw" target="_blank" class="btn primary">Listen on Audio.com →</a>
+                    </div>
+                </div>
             </div>
-        </section>
 
-        <hr class="divider">
-
-        <section id="blog">
-            <h2>Notebook & Write-ups</h2>
-            <div class="blog-list">
-                <article class="blog-item">
+            <div class="grid-item" data-category="blog" style="--override-color: var(--blog-primary); --secondary-color: var(--blog-secondary);">
+                <div class="card-content blog-card-adjust">
                     <span class="blog-date">June 12, 2026</span>
-                    <h3><a href="#">Building a Dual-Processor Drone Synthesizer</a></h3>
-                    <p>Isolating parallel display bus processing from real-time audio computation using an ESP32-S3 and a Teensy board...</p>
-                </article>
-
-                <article class="blog-item">
-                    <span class="blog-date">May 20, 2026</span>
-                    <h3><a href="#">Asset Caching in JUCE Plugin Editors</a></h3>
-                    <p>Optimizing UI paint performance by caching binary image elements for custom knobs and faders.</p>
-                </article>
+                    <span class="item-tag tag-blog">Notebook</span>
+                    <h3>Building a Dual-Processor Drone Synthesizer</h3>
+                    <p>A deep dive into isolating parallel display data buses from real-time audio computation loops using an ESP32-S3 and a Teensy board.</p>
+                    <div class="project-actions">
+                        <a href="#" class="read-link">Read Full Post →</a>
+                    </div>
+                </div>
             </div>
+
+            <div class="grid-item" data-category="blog" style="--override-color: #ff0055; --secondary-color: #7a00ff;">
+                <div class="card-content blog-card-adjust">
+                    <span class="blog-date">May 20, 2026</span>
+                    <span class="item-tag tag-blog">Notebook</span>
+                    <h3>Asset Caching in JUCE Editors</h3>
+                    <p>Optimizing graphical user interface rendering inside custom audio plugins to minimize GUI paint overhead.</p>
+                    <div class="project-actions">
+                        <a href="#" class="read-link">Read Full Post →</a>
+                    </div>
+                </div>
+            </div>
+
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2026 Simon Whittome. Built with minimalism and care.</p>
+        <p>&copy; 2026 Simon Whittome. Blending cozy design with electric feedback.</p>
     </footer>
 
     <script>
+        // 1. Topic Filtering Module
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const gridItems = document.querySelectorAll('.grid-item');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                const filterValue = button.getAttribute('data-filter');
+
+                gridItems.forEach(item => {
+                    if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                        item.classList.remove('hidden-item');
+                    } else {
+                        item.classList.add('hidden-item');
+                    }
+                });
+            });
+        });
+
+        // 2. Real-Time Fluid Mouse Tracker Module
+        gridItems.forEach(item => {
+            item.addEventListener('mousemove', (e) => {
+                const rect = item.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                item.style.setProperty('--mouse-x', `${x}px`);
+                item.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // 3. Isolated In-Browser Game Web Opener
         function openGame(gameUrl) {
-            // Configures a clean popup window without toolbars, perfectly sized for a web game
             const width = 1024;
             const height = 600;
             const left = (screen.width - width) / 2;
             const top = (screen.height - height) / 2;
-            
-            window.open(
-                gameUrl, 
-                'GameWindow', 
-                `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=no,status=no,toolbar=no,menubar=no`
-            );
+            window.open(gameUrl, 'GameWindow', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=no,status=no,toolbar=no,menubar=no`);
         }
     </script>
 </body>
