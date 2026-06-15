@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Audio | Portfolio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header class="hero-container">
+        <div class="hero-grid">
+            <div class="bio-content">
+                <h1>Simon Sound</h1>
+                <p class="subtitle">Sound Engineer, Audio Developer & Musician</p>
+                <p class="description">
+                    I'm Simon, an Audio Engineer and Developer, and Tonmeister Graduate.
+                    This website is a place where I put all my projects and passions for you to
+                    enjoy!
+                </p>
+                <p class="contact-links">Get in touch - contact@simonaudio.com</p>
+                <div class="contact-links">
+                    <a href="mailto:your.email@example.com" class="btn secondary">Email</a>
+                    <a href="https://github.com/yourusername" target="_blank" class="btn secondary">GitHub</a>
+                    <a href="https://audio.com/simonw" target="_blank" class="btn secondary">Audio.com</a>
+                </div>
+            </div>
+
+            <div class="photo-grid">
+                <div class="grid-photo photo-1" style="background-image: url('static/images/profile-grid1.jpg');"></div>
+                <div class="grid-photo photo-2" style="background-image: url('static/images/profile-grid2.jpg');"></div>
+                <div class="grid-photo photo-3" style="background-image: url('static/images/profile-grid3.jpg');"></div>
+                <div class="grid-photo photo-4" style="background-image: url('static/images/profile-grid4.jpg');"></div>
+            </div>
+        </div>
+    </header>
+
+    <hr class="divider">
+
+    <main class="content-wrapper">
+        <section id="projects">
+            <h2>Featured Projects</h2>
+            <div class="projects-grid">
+                
+                <div class="project-card">
+                    <img src="static/images/delayity-ui.jpg" alt="Delayity Plugin UI" class="project-img">
+                    <h3>Delayity Audio Plugin</h3>
+                    <p class="project-tag">C++ / JUCE Framework</p>
+                    <p>A custom digital audio delay plugin built featuring custom graphic image caching for smooth, responsive control components.</p>
+                    <div class="project-actions">
+                        <a href="static/downloads/Delayity_Installer.zip" class="btn primary" download>Download Plugin</a>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <img src="static/images/ty-climbs.jpg" alt="Ty Climbs Gameplay" class="project-img">
+                    <h3>Ty Climbs Guildford Cathedral</h3>
+                    <p class="project-tag">Godot Engine / GDScript</p>
+                    <p>An interactive game featuring custom movement vectors and automated animation state-machines.</p>
+                    <div class="project-actions">
+                        <button onclick="openGame('static/games/ty-climbs/index.html')" class="btn primary">Play in New Window</button>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <img src="static/images/tihami-kart.jpg" alt="Tihami Kart Gameplay" class="project-img">
+                    <h3>Tihami Kart</h3>
+                    <p class="project-tag">Godot Engine / GDScript</p>
+                    <p>A fast-paced arcade racer exploring group AI behaviors and dynamic travel noise mechanics.</p>
+                    <div class="project-actions">
+                        <button onclick="openGame('static/games/tihami-kart/index.html')" class="btn primary">Play in New Window</button>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="center-box">
+                <a href="https://audio.com/simonw" target="_blank" class="btn secondary outward">View more audio work on Audio.com →</a>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <section id="blog">
+            <h2>Notebook & Write-ups</h2>
+            <div class="blog-list">
+                <article class="blog-item">
+                    <span class="blog-date">June 12, 2026</span>
+                    <h3><a href="#">Building a Dual-Processor Drone Synthesizer</a></h3>
+                    <p>Isolating parallel display bus processing from real-time audio computation using an ESP32-S3 and a Teensy board...</p>
+                </article>
+
+                <article class="blog-item">
+                    <span class="blog-date">May 20, 2026</span>
+                    <h3><a href="#">Asset Caching in JUCE Plugin Editors</a></h3>
+                    <p>Optimizing UI paint performance by caching binary image elements for custom knobs and faders.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Simon Whittome. Built with minimalism and care.</p>
+    </footer>
+
+    <script>
+        function openGame(gameUrl) {
+            // Configures a clean popup window without toolbars, perfectly sized for a web game
+            const width = 1024;
+            const height = 600;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            
+            window.open(
+                gameUrl, 
+                'GameWindow', 
+                `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=no,status=no,toolbar=no,menubar=no`
+            );
+        }
+    </script>
+</body>
+</html>
