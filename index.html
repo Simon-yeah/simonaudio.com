@@ -17,7 +17,7 @@
                     Welcome! I explore the intersection of low-level digital signal processing, spatial audio synthesis, and interactive game design. Here you'll find the tools I've built, games I've programmed, and occasional notes on hardware and audio engineering. 
                 </p>
                 <div class="contact-links">
-                    <a href="mailto:your.email@example.com" class="btn secondary">Email</a>
+                    <a href="mailto:contact@simonaudio.com" class="btn secondary">Email</a>
                     <a href="https://github.com/yourusername" target="_blank" class="btn secondary">GitHub</a>
                     <a href="https://audio.com/simonw" target="_blank" class="btn secondary">Audio.com</a>
                 </div>
@@ -26,8 +26,8 @@
             <div class="photo-grid">
                 <div class="grid-photo photo-1" style="background-image: url('static/images/homepage1.jpg');"></div>
                 <div class="grid-photo photo-2" style="background-image: url('static/images/homepage2.jpg');"></div>
-                <div class="grid-photo photo-3" style="background-image: url('static/images/profile-grid3.jpg');"></div>
-                <div class="grid-photo photo-4" style="background-image: url('static/images/profile-grid4.jpg');"></div>
+                <div class="grid-photo photo-3" style="background-image: url('static/images/homepage3.jpg');"></div>
+                <div class="grid-photo photo-4" style="background-image: url('static/images/homepage4.jpg');"></div>
             </div>
         </div>
     </header>
@@ -48,15 +48,14 @@
         </section>
 
         <section id="workspace-grid" class="unified-grid">
-            
             <div class="grid-item" data-category="vst" style="--override-color: var(--vst-primary); --secondary-color: var(--vst-secondary);">
                 <div class="card-content">
-                    <img src="static/images/delayity-ui.jpg" alt="Delayity Plugin UI" class="project-img">
+                    <img src="static/images/thumbnails/delayity.png" alt="Delayity Plugin UI" class="project-img">
                     <span class="item-tag tag-vst">VST Plugin</span>
                     <h3>Delayity Audio Delay</h3>
-                    <p>A digital delay plugin built with C++ and JUCE featuring custom asset image caching for smooth fader and knob graphics.</p>
+                    <p>My first plugin - a delay plugin built with with C++/JUCE. I made the UI in blender, then created the custom ui using those animations and renders. It sounds great!</p>
                     <div class="project-actions">
-                        <a href="static/downloads/Delayity_Installer.zip" class="btn primary" download>Download Plugin</a>
+                        <a href="static/downloads/Delayity.zip" class="btn primary" download>Download Plugin</a>
                     </div>
                 </div>
             </div>
@@ -64,9 +63,9 @@
             <div class="grid-item" data-category="games" style="--override-color: var(--game-primary); --secondary-color: var(--game-secondary);">
                 <div class="card-content">
                     <img src="static/images/ty-climbs.jpg" alt="Ty Climbs Gameplay" class="project-img">
-                    <span class="item-tag tag-game">In-Browser Game</span>
+                    <span class="item-tag tag-game">Browser Game</span>
                     <h3>Ty Climbs Guildford Cathedral</h3>
-                    <p>An interactive climbing game built in Godot utilizing automated state-machines and custom GDScript vector maths.</p>
+                    <p>This is a game I made with my mate in it because I had a few evenings free between assignments - I took photos of him, then used aseprite to turn him into a spritesheet.</p>
                     <div class="project-actions">
                         <button onclick="openGame('static/games/ty-climbs/index.html')" class="btn primary">Play in New Window</button>
                     </div>
@@ -75,52 +74,15 @@
 
             <div class="grid-item" data-category="games" style="--override-color: #00ffcc; --secondary-color: #0055ff;">
                 <div class="card-content">
-                    <img src="static/images/tihami-kart.jpg" alt="Tihami Kart Gameplay" class="project-img">
-                    <span class="item-tag tag-game">In-Browser Game</span>
+                    <img src="static/images/thumbnails/Tihamigame.png" alt="Tihami Kart Gameplay" class="project-img">
+                    <span class="item-tag tag-game">Browser Game</span>
                     <h3>Tihami Kart</h3>
-                    <p>A fast-paced arcade racer exploring group AI movement vectors and dynamic travel noise mechanics.</p>
+                    <p>This is a trackmania clone I made in Godot 4 with two tracks named after friends - this was a solo project, and all assetts including 3D models and music were created by me.</p>
                     <div class="project-actions">
                         <button onclick="openGame('static/games/tihami-kart/index.html')" class="btn primary">Play in New Window</button>
                     </div>
                 </div>
             </div>
-
-            <div class="grid-item" data-category="music" style="--override-color: var(--music-primary); --secondary-color: var(--music-secondary);">
-                <div class="card-content">
-                    <img src="static/images/live-session-1.jpg" alt="Mixing Console Session" class="project-img">
-                    <span class="item-tag tag-music">Live Audio Session</span>
-                    <h3>Studio Session Tracking</h3>
-                    <p>Multi-track recording and live mixing capture showcases. Hosted as an organized project track pack on Audio.com.</p>
-                    <div class="project-actions">
-                        <a href="https://audio.com/simonw" target="_blank" class="btn primary">Listen on Audio.com →</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid-item" data-category="blog" style="--override-color: var(--blog-primary); --secondary-color: var(--blog-secondary);">
-                <div class="card-content blog-card-adjust">
-                    <span class="blog-date">June 12, 2026</span>
-                    <span class="item-tag tag-blog">Notebook</span>
-                    <h3>Building a Dual-Processor Drone Synthesizer</h3>
-                    <p>A deep dive into isolating parallel display data buses from real-time audio computation loops using an ESP32-S3 and a Teensy board.</p>
-                    <div class="project-actions">
-                        <a href="#" class="read-link">Read Full Post →</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid-item" data-category="blog" style="--override-color: #ff0055; --secondary-color: #7a00ff;">
-                <div class="card-content blog-card-adjust">
-                    <span class="blog-date">May 20, 2026</span>
-                    <span class="item-tag tag-blog">Notebook</span>
-                    <h3>Asset Caching in JUCE Editors</h3>
-                    <p>Optimizing graphical user interface rendering inside custom audio plugins to minimize GUI paint overhead.</p>
-                    <div class="project-actions">
-                        <a href="#" class="read-link">Read Full Post →</a>
-                    </div>
-                </div>
-            </div>
-
         </section>
     </main>
 
