@@ -188,19 +188,15 @@ footer { text-align: center; padding: 4rem 0; color: var(--text-muted); font-siz
     z-index: 1;
     overflow: hidden;
 
-    /* Runtime Mouse Positions provided by JavaScript */
+    /* Runtime Mouse Positions provided by JavaScript default to center */
     --mouse-x: 50%;
     --mouse-y: 50%;
     
-    /* Default Overrides */
-    --override-color: #ffffff;
-    --secondary-color: rgba(255, 255, 255, 0);
-
-    /* FIX: Removed background-color from transition list to eliminate mouse-entry flash triggers */
     transition: 
         transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), 
         border-color 0.4s ease, 
-        box-shadow 0.4s ease;
+        box-shadow 0.4s ease,
+        background 0.4s ease;
 }
 
 /* Internal radial glow layer */
@@ -209,16 +205,17 @@ footer { text-align: center; padding: 4rem 0; color: var(--text-muted); font-siz
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     border-radius: 16px;
+    /* FIX: Added hardcoded fallbacks directly to the variable calls */
     background: radial-gradient(
-        250px circle at var(--mouse-x) var(--mouse-y), 
-        var(--override-color) 0%, 
-        transparent 100%
+        300px circle at var(--mouse-x) var(--mouse-y), 
+        var(--override-color, #556b2f) 0%, 
+        transparent 80%
     );
     opacity: 0;
-    mix-blend-mode: color-burn;
+    /* FIX: Changed from color-burn to normal to let vibrant tints show beautifully on light mode */
+    mix-blend-mode: normal; 
     pointer-events: none;
     z-index: -1;
-    /* FIX: Explicit transition rules prevent coordinate jumps from calculating visually */
     transition: opacity 0.4s ease; 
 }
 
@@ -228,48 +225,44 @@ footer { text-align: center; padding: 4rem 0; color: var(--text-muted); font-siz
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     border-radius: 16px;
-    padding: 2px;
+    padding: 2px; /* Controls border thickness */
     
     background: radial-gradient(
-        140px circle at var(--mouse-x) var(--mouse-y), 
-        #ffffff 0%, 
-        var(--override-color) 50%, 
-        var(--secondary-color) 80%,
+        180px circle at var(--mouse-x) var(--mouse-y), 
+        var(--override-color, #556b2f) 0%, 
+        var(--secondary-color, #e6dfd3) 60%,
         transparent 100%
     );
     
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
+    /* FIX: Rewritten masking using padding-box and destination-out for bulletproof cross-browser rendering */
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
     mask-composite: exclude;
     
     opacity: 0;
     pointer-events: none;
-    /* FIX: Keeps position snaps instant while letting visibility materialize smoothly */
     transition: opacity 0.4s ease;
 }
 
 /* Animated State Mutations upon Cursor Entry */
 .grid-item:hover {
     transform: translateY(-8px) scale(1.01);
-    background: rgba(255, 255, 255, 0.9);
-    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(255, 255, 255, 0.1);
     
     box-shadow: 
         0 20px 40px -15px rgba(0, 0, 0, 0.05), 
-        0 0 30px -5px var(--override-color),
-        inset 0 1px 1px rgba(255, 255, 255, 0.6);
+        inset 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
-.grid-item:hover::before,
+/* FIX: Boosted opacities so the colors register clearly against crisp light themes */
 .grid-item:hover::after {
-    opacity: 0.15;
+    opacity: 0.12; /* Soft inner ambient light color wash */
 }
 
-/* Dynamic intensity multipliers for bright neon assets */
-.grid-item[data-category="vst"]:hover::before,
-.grid-item[data-category="games"]:hover::before {
-    opacity: 0.4;
+.grid-item:hover::before {
+    opacity: 0.85; /* Sharp, vivid outer tracking gradient border ring */
 }
 
 /* Card Content Structural Alignment */
@@ -298,8 +291,17 @@ footer { text-align: center; padding: 4rem 0; color: var(--text-muted); font-siz
     transition: transform 0.4s ease;
 }
 
-.grid-item:hover .project-img {
-    transform: scale(0.99);
+/* Animated State Mutations upon Cursor Entry */
+.grid-item:hover {
+    transform: translateY(-8px) scale(1.01);
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(255, 255, 255, 0.1);
+    
+    /* RESTORED: The dynamic color glow outside the card boundaries */
+    box-shadow: 
+        0 20px 40px -15px rgba(0, 0, 0, 0.05), 
+        0 0 35px -5px var(--override-color, #556b2f), /* The glowing aura is back! */
+        inset 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
 .grid-item h3 { 
@@ -315,34 +317,12 @@ footer { text-align: center; padding: 4rem 0; color: var(--text-muted); font-siz
     margin-bottom: 1.5rem;
 }
 
-.project-actions { 
-    margin-top: auto; 
-    padding-top: 1rem; 
+.card-meta {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0 0.5rem 0; 
 }
 
-/* Text Content Styling inside Blogs */
-.blog-date { 
-    font-size: 0.85rem; 
-    color: var(--text-muted); 
-    font-weight: 500;
-}
-
-.read-link {
-    color: var(--text-main);
-    font-weight: 600;
-    text-decoration: none;
-    font-size: 0.95rem;
-    display: inline-block;
-    margin-top: 0.5rem;
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.read-link:hover { 
-    color: var(--accent); 
-    transform: translateX(4px);
-}
-
-/* Category Tags Visual Profiles */
 .item-tag {
     align-self: flex-start;
     font-size: 0.75rem;
@@ -351,7 +331,27 @@ footer { text-align: center; padding: 4rem 0; color: var(--text-muted); font-siz
     letter-spacing: 0.06em;
     padding: 0.25rem 0.6rem;
     border-radius: 4px;
-    margin: 1rem 0 0.5rem 0;
+    margin: 0; /* Cleared margin to rely entirely on card-meta wrapper spacing */
+}
+
+/* Updated date layout to target the bottom-right corner */
+.card-date {
+    position: absolute;
+    bottom: 1.5rem;      /* Matches the bottom padding of the card */
+    right: 1.5rem;       /* Matches the right padding of the card */
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 300;
+    margin: 0;
+    white-space: nowrap; /* Forces the date to stay on one clean line */
+    z-index: 3;
+}
+
+/* Adjust the actions container to leave a little extra room for the date */
+.project-actions { 
+    margin-top: auto; 
+    padding-top: 1rem; 
+    padding-right: 5rem; /* Prevents long buttons from overlapping the absolute date */
 }
 
 .tag-vst { background-color: #e3f2fd; color: #0d47a1; }

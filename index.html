@@ -14,7 +14,8 @@
                 <h1>Simon Audio</h1>
                 <p class="subtitle">Sound Engineer, Audio Developer & Game Creator</p>
                 <p class="description">
-                    Hi! This is where I put all my projects and passions, so there all in one place, and you can enjoy them! There's free software I've made, music to listen to from wonderful artists, and a few games too - maybe a blog later down the line. Enjoy! 
+                    Hi! I'm Simon, a Tonmeister Graduate '26 and Audio Engineer, and this is where I put all my projects and passions in one place so you can enjoy them!
+                    There's free software I've made, music to listen to from wonderful artists, and a few games too - maybe a blog later down the line. Enjoy! 
                 </p>
                 <div class="contact-links">
                     <a href="mailto:contact@simonaudio.com" class="btn secondary">Email</a>
@@ -42,47 +43,73 @@
                 <button class="filter-btn active" data-filter="all">All Items</button>
                 <button class="filter-btn" data-filter="vst">VSTs & Plugins</button>
                 <button class="filter-btn" data-filter="games">Games</button>
-                <button class="filter-btn" data-filter="music">Audio & Live Sessions</button>
+                <button class="filter-btn" data-filter="music">Music and Recordings</button>
                 <button class="filter-btn" data-filter="blog">Blog</button>
             </div>
         </section>
 
         <section id="workspace-grid" class="unified-grid">
+
+
             <div class="grid-item" data-category="vst" style="--override-color: var(--vst-primary); --secondary-color: var(--vst-secondary);">
                 <div class="card-content">
                     <img src="static/images/thumbnails/delayity.png" alt="Delayity Plugin UI" class="project-img">
-                    <span class="item-tag tag-vst">VST Plugin</span>
+                    <div class="card-meta">
+                        <span class="item-tag tag-vst">VST Plugin</span>
+                    </div>
                     <h3>Delayity Audio Delay</h3>
                     <p>My first plugin - a delay plugin built with with C++/JUCE. I made the UI in blender, then created the custom ui using those animations and renders. It sounds great! (currently built only for linux - need to make Windows and macOS versions)</p>
                     <div class="project-actions">
                         <a href="static/downloads/Delayity.zip" class="btn primary" download>Download Plugin</a>
                     </div>
+                    <span class="card-date">March 2026</span>
                 </div>
             </div>
 
             <div class="grid-item" data-category="games" style="--override-color: var(--game-primary); --secondary-color: var(--game-secondary);">
                 <div class="card-content">
                     <img src="static/images/thumbnails/tygame.png" alt="Ty Climbs Gameplay" class="project-img">
-                    <span class="item-tag tag-game">Browser Game</span>
+                    <div class="card-meta">
+                        <span class="item-tag tag-game">Browser Game</span>
+                    </div>
                     <h3>Ty Climbs Guildford Cathedral</h3>
                     <p>This is a game I made with my mate in it because I had a few evenings free between assignments - I took photos of him, then used aseprite to turn him into a spritesheet.</p>
                     <div class="project-actions">
-                        <button onclick="openGame('static/games/ty-climbs/index.html')" class="btn primary">Play in New Window</button>
+                        <a href="https://simonwhittome.itch.io/ty-climbs-guildford-cathedral" target="_blank" class="btn primary">Play on Itch.io</a>
+                    </div>
+                    <span class="card-date">October</span>
+                </div>
+            </div>
+
+            <div class="grid-item" data-category="games" style="--override-color: var(--game-primary); --secondary-color: var(--game-secondary);">
+                <div class="card-content">
+                    <img src="static/images/thumbnails/Tihamigame.png" alt="Tihami Kart Gameplay" class="project-img">
+                    <div class="card-meta">
+                        <span class="item-tag tag-game">Browser Game</span>
+                    </div>
+                        <h3>Tihami Kart</h3>
+                    <p>This is a trackmania clone I made in Godot 4 with two tracks named after friends - this was a solo project, and all assetts including 3D models and music were created by me.</p>
+                    <div class="project-actions">
+                        <a href="https://simonwhittome.itch.io/tihamikart" target="_blank" class="btn primary">Play on Itch.io</a>
                     </div>
                 </div>
             </div>
 
-            <div class="grid-item" data-category="games" style="--override-color: #00ffcc; --secondary-color: #0055ff;">
-                <div class="card-content">
-                    <img src="static/images/thumbnails/Tihamigame.png" alt="Tihami Kart Gameplay" class="project-img">
-                    <span class="item-tag tag-game">Browser Game</span>
-                    <h3>Tihami Kart</h3>
-                    <p>This is a trackmania clone I made in Godot 4 with two tracks named after friends - this was a solo project, and all assetts including 3D models and music were created by me.</p>
-                    <div class="project-actions">
-                        <button onclick="openGame('static/games/tihami-kart/index.html')" class="btn primary">Play in New Window</button>
-                    </div>
+            <div class="grid-item" data-category="music" style="--override-color:#00ffcc; --secondary-color:#0055ff;">
+                <img src="static/images/thumbnails/accidentals1.png" alt="Accidentals sessions" class="project-img">
+                <div class="card-meta">
+                    <span class="item-tag tag-music">Recording Session</span>
                 </div>
+                <h3>Accidentals Recording Session</h3>
+                <p>A collection of recordings made with <a href="https://the-accidentals.co.uk/about/">The Accidentals</a> on the 10th of March 2026. This was a fantastic recording of a large ensemble recorded in Studio 1 of PATS as part of the <a href="https://iosr.surrey.ac.uk/">Tonmeister</a> course at the Institute of Sound Recording, University of Surrey.</p>
+                <div class="project-actions">
+                        <a href="https://audio.com/simonw/collections/accidentals-session-march-10th" target="_blank" class="btn primary">Listen on <u>audio.com</u></a>
+                    </div>
             </div>
+
+
+
+
         </section>
     </main>
 
