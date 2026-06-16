@@ -52,6 +52,14 @@
 
         <section id="workspace-grid" class="unified-grid">
 
+            <section id="workspace-grid" class="unified-grid">
+
+            <div id="blog-posts-container" style="display: contents;"></div>
+
+            <div class="grid-item" data-category="vst" style="--override-color: var(--vst-primary); --secondary-color: var(--vst-secondary);">
+        </div>
+    
+    </section>
 
             <div class="grid-item" data-category="vst" style="--override-color: var(--vst-primary); --secondary-color: var(--vst-secondary);">
                 <div class="card-content">
@@ -123,40 +131,84 @@
     </footer>
 
     <script>
-        // 1. Topic Filtering Module
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        const gridItems = document.querySelectorAll('.grid-item');
+        // 1. Asynchronously Load Blog Metadata and Inject Cards
+        async function initPortfolio() {
+            const container = document.getElementById('blog-posts-container');
 
-        filterButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
+            try {
+                const response = await fetch('posts.json');
+                const posts = await response.json();
 
-                const filterValue = button.getAttribute('data-filter');
+                posts.forEach(post => {
+                    const card = document.createElement('div');
+                    card.classList.add('grid-item');
+                    card.setAttribute('data-category', 'blog');
+                    card.style.setProperty('--override-color', post.color);
+                    card.style.setProperty('--secondary-color', post.secondaryColor);
 
-                gridItems.forEach(item => {
-                    if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
-                        item.classList.remove('hidden-item');
-                    } else {
-                        item.classList.add('hidden-item');
-                    }
+                    card.innerHTML = `
+                        <div class="card-content">
+                            <div class="card-meta">
+                                <span class="item-tag tag-blog">Blog Post</span>
+                            </div>
+                            <h3>${post.title}</h3>
+                            <p>${post.summary}</p>
+                            <div class="project-actions">
+                                <a href="blog.html?post=${post.filename}" class="btn primary">Read Post</a>
+                            </div>
+                            <span class="card-date">${post.date}</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Error loading blog manifest:", error);
+            }
+
+            // Initialize UI Modules AFTER dynamic content has landed in the DOM
+            setupFiltering();
+            setupMouseTracker();
+        }
+
+        // 2. Topic Filtering Module (Updated to capture dynamic cards)
+        function setupFiltering() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const gridItems = document.querySelectorAll('.grid-item');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    const filterValue = button.getAttribute('data-filter');
+
+                    gridItems.forEach(item => {
+                        if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                            item.classList.remove('hidden-item');
+                        } else {
+                            item.classList.add('hidden-item');
+                        }
+                    });
                 });
             });
-        });
+        }
 
-        // 2. Real-Time Fluid Mouse Tracker Module
-        gridItems.forEach(item => {
-            item.addEventListener('mousemove', (e) => {
-                const rect = item.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+        // 3. Real-Time Fluid Mouse Tracker Module
+        function setupMouseTracker() {
+            const gridItems = document.querySelectorAll('.grid-item');
+            gridItems.forEach(item => {
+                item.addEventListener('mousemove', (e) => {
+                    const rect = item.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
 
-                item.style.setProperty('--mouse-x', `${x}px`);
-                item.style.setProperty('--mouse-y', `${y}px`);
+                    item.style.setProperty('--mouse-x', `${x}px`);
+                    item.style.setProperty('--mouse-y', `${y}px`);
+                });
             });
-        });
+        }
 
-        // 3. Isolated In-Browser Game Web Opener
+        // 4. Isolated In-Browser Game Web Opener
         function openGame(gameUrl) {
             const width = 1024;
             const height = 600;
@@ -164,6 +216,9 @@
             const top = (screen.height - height) / 2;
             window.open(gameUrl, 'GameWindow', `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=no,status=no,toolbar=no,menubar=no`);
         }
+
+        // Fire off the system build
+        initPortfolio();
     </script>
 </body>
 </html>

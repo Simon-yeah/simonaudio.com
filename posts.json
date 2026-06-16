@@ -1,0 +1,11 @@
+[
+  {
+    "id": "spatial-audiobooks",
+    "title": "Spatial audio for Audiobooks",
+    "filename": "Spatial-Audio-Report.md",
+    "date": "June 2026",
+    "summary": "Mono voiceover or spatialised recreation of a world? What technologies exist to turn the average audio book into an immersive experience?",
+    "color": "var(--blog-primary)",
+    "secondaryColor": "var(--blog-secondary)"
+  }
+]

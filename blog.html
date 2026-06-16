@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Simon Audio</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <style>
+        /* --- DESIGN SYSTEM THEME VARIABLES --- */
+        :root {
+            /* Default Light Mode Scheme */
+            --bg-color: #fcfaf6;
+            --card-bg: #ffffff;
+            --text-main: #2c2a24;
+            --text-muted: #706e64;
+            --border-color: #e6e4de;
+            --accent: #b39656; 
+            
+            /* Button Interface Tokens */
+            --btn-bg: rgba(255, 255, 255, 0.85);
+            --btn-text: #2c2a24;
+            --btn-border: #e6e4de;
+        }
+
+        /* Ambient Dark Rain Scheme */
+        [data-theme="dark"] {
+            --bg-color: #141413;     
+            --card-bg: #1c1c1a;      
+            --text-main: #f5f4f0;    
+            --text-muted: #9c9a90;   
+            --border-color: #2e2d2a; 
+
+            /* Button Interface Variable Overrides */
+            --btn-bg: #1c1c1a;
+            --btn-text: #f5f4f0;
+            --btn-border: #2e2d2a;
+        }
+
+        /* --- GLOBAL BASE STYLES --- */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+                        color 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* --- LAYOUT GRID ARCHITECTURE --- */
+        .content-container-grid {
+            display: grid;
+            /* Layout: 180px fixed utilities column, 760px fluid reading sheet column */
+            grid-template-columns: 180px 760px;
+            gap: 3.5rem;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            position: relative;
+            z-index: 4;
+        }
+
+        /* --- STICKY SIDEBAR NAVIGATION COLUMN --- */
+        .sidebar-navigation-column {
+            position: sticky;
+            top: 4rem; /* Stays fixed exactly 4rem below viewport window ceiling when scrolling */
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem; /* Tight, integrated gap spacing layout */
+            align-items: flex-start;
+            height: fit-content;
+        }
+
+        /* --- INTERACTIVE UTILITY BUTTONS --- */
+        .btn.secondary, .rain-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1rem !important;
+            border-radius: 8px !important;
+            font-size: 0.9rem !important;
+            font-weight: 500 !important;
+            text-decoration: none;
+            cursor: pointer;
+            width: 100%; /* Spans full sidebar width layout box evenly */
+            box-sizing: border-box;
+            backdrop-filter: blur(8px);
+            
+            background: var(--btn-bg) !important;
+            color: var(--btn-text) !important;
+            border: 1px solid var(--btn-border) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .rain-btn.active {
+            background: #1c2a38 !important; 
+            border-color: #3a5d7c !important;
+            color: #8ec5fc !important;
+            box-shadow: 0 0 15px rgba(142, 197, 252, 0.2);
+        }
+
+        /* --- CENTRAL CONTENT CARD SHEET --- */
+        .blog-post-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 3.5rem 4rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.01);
+            transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+                        border-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Typography spacing & readability enhancements */
+        .blog-post-content h1 { 
+            font-size: 2.6rem; 
+            margin-top: 0; 
+            margin-bottom: 1.5rem; 
+            color: var(--text-main); 
+            font-weight: 700; 
+            letter-spacing: -0.03em; 
+            line-height: 1.2;
+        }
+
+        .blog-post-content h2 { 
+            font-size: 1.75rem; 
+            margin-top: 3.5rem; 
+            margin-bottom: 1.2rem; 
+            color: var(--text-main); 
+            border-bottom: 1px solid var(--border-color); 
+            padding-bottom: 0.4rem; 
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            transition: border-color 0.8s ease;
+        }
+
+        .blog-post-content h3 { font-size: 1.35rem; margin-top: 2.5rem; color: var(--accent); }
+        .blog-post-content p { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 1.12rem; 
+            line-height: 1.85; 
+            color: var(--text-main); 
+            margin-bottom: 1.75rem; 
+            text-align: left; 
+        }
+
+        .blog-post-content ul, .blog-post-content ol { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin-bottom: 1.75rem; 
+            padding-left: 1.5rem; 
+        }
+        .blog-post-content li { font-size: 1.12rem; line-height: 1.8; color: var(--text-main); margin-bottom: 0.6rem; }
+
+        .blog-post-content pre {
+            background: #2b2a27;
+            color: #fcfaf6;
+            padding: 1.25rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 2rem 0;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .blog-post-content code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size: 0.92rem; }
+        .blog-post-content img { display: block; max-width: 100%; height: auto; margin: 3rem auto; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+
+        /* Native Styled Blockquotes for Obsidian Callouts */
+        .blog-post-content blockquote {
+            background: var(--bg-color);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem 2rem;
+            border-radius: 4px 12px 12px 4px;
+            margin: 2.5rem 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .blog-post-content blockquote p {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 1.08rem;
+            line-height: 1.75;
+            color: var(--text-main);
+        }
+        
+        .callout-title {
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.75rem;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .blog-post-content blockquote strong {
+            display: block;
+            font-style: normal;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem; }
+
+        /* --- HARDWARE ACCELERATED CANVAS SYSTEM --- */
+        #rainCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none; 
+            z-index: 2; /* Sits below article card (z-index 3) and sidebar buttons (z-index 4) */
+            opacity: 0;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #rainCanvas.active { opacity: 1; }
+
+        /* Responsive Fallback Configuration */
+        @media (max-width: 992px) {
+            .content-container-grid { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1rem; }
+            .sidebar-navigation-column { position: relative; top: 0; flex-direction: row; width: 100%; }
+            .btn.secondary, .rain-btn { width: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="ambient-rain-audio" loop>
+        <source src="static/downloads/ambient-rain.mp3" type="audio/mpeg">
+    </audio>
+    
+    <canvas id="rainCanvas"></canvas>
+
+    <main class="content-container-grid">
+        
+        <aside class="sidebar-navigation-column">
+            <a href="index.html" class="btn secondary">← Portfolio</a>
+            <button id="rain-toggle-btn" class="rain-btn" onclick="toggleRainSound()">
+                <span class="icon">🌧️</span> <span id="btn-text">Turn on rain</span>
+            </button>
+        </aside>
+
+        <article id="markdown-target" class="blog-post-content">
+            <p style="color: var(--text-muted);">Loading post content...</p>
+        </article>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Simon Whittome - Let everything that has breath praise the Lord</p>
+    </footer>
+
+    <script>
+        function parseObsidianSyntax(text) {
+            return text.replace(/!\[\[(.*?)\]\]/g, '<img src="static/images/$1" alt="Blog Attachment Image">');
+        }
+
+        function formatCallouts() {
+            const blockquotes = document.querySelectorAll('#markdown-target blockquote');
+            blockquotes.forEach(bq => {
+                if (bq.innerHTML.includes('[!quote]')) {
+                    bq.innerHTML = bq.innerHTML.replace('[!quote]', '');
+                    const titleDiv = document.createElement('div');
+                    titleDiv.className = 'callout-title';
+                    titleDiv.innerHTML = '💡 Quote';
+                    bq.insertBefore(titleDiv, bq.firstChild);
+                }
+            });
+        }
+
+        async function renderPost() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const rawParam = urlParams.get('post');
+
+            if (!rawParam) {
+                document.getElementById('markdown-target').innerHTML = "<h2>Post configuration missing.</h2>";
+                return;
+            }
+
+            const postFilename = decodeURIComponent(rawParam);
+
+            try {
+                const response = await fetch(`content/blog/${postFilename}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status} - Not Found`);
+                
+                let rawMarkdown = await response.text();
+                rawMarkdown = parseObsidianSyntax(rawMarkdown);
+
+                document.getElementById('markdown-target').innerHTML = marked.parse(rawMarkdown);
+                formatCallouts();
+                
+            } catch (error) {
+                document.getElementById('markdown-target').innerHTML = `
+                    <h2>Error loading post article.</h2>
+                    <p style="color: #c0392b; font-family: monospace;">Details: ${error.message}</p>
+                `;
+                console.error(error);
+            }
+        }
+
+        // --- 60FPS GPU POWERED AUDIO-RAIN LOOP ENGINE ---
+        const canvas = document.getElementById('rainCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let animationFrameId = null;
+        let isRainActive = false;
+        const drops = [];
+        const maxDrops = 140; // Increased to maintain good density across full-width layout
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class RainDrop {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * canvas.height; 
+            }
+
+            reset() {
+                // FIXED: Rain now spawns randomly across the entire width of the viewport window
+                this.x = Math.random() * canvas.width;
+
+                // Generates drops safely outside visual view heights to avoid clumped initializations
+                this.y = Math.random() * -100 - 40; 
+                this.length = 45 + Math.random() * 35;
+                this.speed = 15 + Math.random() * 12; 
+                this.opacity = 0.1 + Math.random() * 0.45;
+                this.width = 1 + Math.random() * 0.8;
+            }
+
+            update() {
+                this.y += this.speed;
+                if (this.y > canvas.height + 50) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                const gradient = ctx.createLinearGradient(this.x, this.y, this.x, this.y + this.length);
+                gradient.addColorStop(0, 'transparent');
+                gradient.addColorStop(1, `rgba(174, 219, 255, ${this.opacity})`);
+                
+                ctx.beginPath();
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = this.width;
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x, this.y + this.length);
+                ctx.stroke();
+            }
+        }
+
+        function initRainSystem() {
+            drops.length = 0;
+            for (let i = 0; i < maxDrops; i++) {
+                drops.push(new RainDrop());
+            }
+        }
+
+        function runRainEngineLoop() {
+            if (!isRainActive) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < drops.length; i++) {
+                drops[i].update();
+                drops[i].draw();
+            }
+            
+            animationFrameId = requestAnimationFrame(runRainEngineLoop);
+        }
+
+        function toggleRainSound() {
+            const audio = document.getElementById('ambient-rain-audio');
+            const btn = document.getElementById('rain-toggle-btn');
+            const btnText = document.getElementById('btn-text');
+
+            if (audio.paused) {
+                audio.play().catch(e => console.log("Audio play intercept:", e));
+                btn.classList.add('active');
+                btnText.innerText = "Turn off rain";
+                
+                document.body.setAttribute('data-theme', 'dark');
+                
+                canvas.classList.add('active');
+                isRainActive = true;
+                initRainSystem();
+                runRainEngineLoop();
+            } else {
+                audio.pause();
+                btn.classList.remove('active');
+                btnText.innerText = "Turn on rain";
+                
+                document.body.removeAttribute('data-theme');
+                
+                canvas.classList.remove('active');
+                isRainActive = false;
+                cancelAnimationFrame(animationFrameId);
+                setTimeout(() => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }, 1200);
+            }
+        }
+
+        renderPost();
+    </script>
+</body>
+</html>
