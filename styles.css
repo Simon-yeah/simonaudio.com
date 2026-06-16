@@ -103,7 +103,7 @@ h1 { font-size: 2.8rem; margin-bottom: 0.5rem; font-weight: 700; letter-spacing:
 
 .btn.primary { background-color: var(--text-main); color: var(--bg-color); z-index: 5; position: relative; }
 .btn.primary:hover { background-color: var(--accent); }
-.btn.secondary { background-color: var(--accent-light); color: var(--text-main); margin-right: 0.5rem; }
+.btn.secondary { background-color: var(--accent-light); color: var(--text-main); margin-right: 0.5rem; margin-top: 0.5rem;}
 .btn.secondary:hover { background-color: var(--border-color); }
 
 /* Decorative Elements */
