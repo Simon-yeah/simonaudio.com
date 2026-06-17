@@ -52,14 +52,7 @@
 
         <section id="workspace-grid" class="unified-grid">
 
-            <section id="workspace-grid" class="unified-grid">
-
             <div id="blog-posts-container" style="display: contents;"></div>
-
-            <div class="grid-item" data-category="vst" style="--override-color: var(--vst-primary); --secondary-color: var(--vst-secondary);">
-        </div>
-    
-    </section>
 
             <div class="grid-item" data-category="vst" style="--override-color: var(--vst-primary); --secondary-color: var(--vst-secondary);">
                 <div class="card-content">
@@ -88,7 +81,6 @@
                 </div>
                 <span class="card-date">March 2026</span>
             </div>
-
 
             <div class="grid-item" data-category="games" style="--override-color: var(--game-primary); --secondary-color: var(--game-secondary);">
                 <div class="card-content">
@@ -119,9 +111,6 @@
                     <span class="card-date">October 2025</span>
                 </div>
             </div>
-
-
-
 
         </section>
     </main>
@@ -170,7 +159,7 @@
             setupMouseTracker();
         }
 
-        // 2. Topic Filtering Module (Updated to capture dynamic cards)
+        // 2. Topic Filtering Module
         function setupFiltering() {
             const filterButtons = document.querySelectorAll('.filter-btn');
             const gridItems = document.querySelectorAll('.grid-item');
