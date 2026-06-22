@@ -126,11 +126,11 @@ Hopefully this show's how the size of the phone doesn't dictate how good the cam
 **Apps** - 
 Here are some apps that I've started using since switching phones:
 
-**Retro** - This is a social media app that let's user's post to their week, and see their friends weeks. A week is just a collection of photos, organised by day, and it has three weeks of retrospect, so there's only 4 pages of content in the whole app at any one point, which is much better than the infinite stream of mainstream social media apps - very anti-doomscrollable! The app let's me share photos with friends, and comment on their photos, and its just a nice experience, and a great trade away from Instagram. I'd recommend the app anyway, because its just good fun and its social media in its purest and best form. Here's a look at what this app looks like on the screen.
+**Retro** - This is a social media app that lets users post to their week, and see their friend's weeks. A week is just a collection of photos, organised by day, and it has three weeks of retrospect, so there are only 4 pages of content in the whole app at any one point, which is much better than the infinite stream of mainstream social media apps - very anti-doomscrollable! The app lets me share photos with friends, and comment on their photos, and it's just a nice experience, and a great trade away from Instagram. I'd recommend the app anyway, because it's just good fun and its social media in its purest and best form. Here's a look at what this app looks like on the screen.
 
 ![[Screenshot_20260622-190812.png]]
 
-**Voice Recorder** - It is worth giving a shout out to the voice recorder app by Fossify ([here](https://play.google.com/store/apps/details?id=org.fossify.voicerecorder&hl=en_GB)) which I've renamed voice recorder in the UI using Before Launcher. The stock voice recorder / memo app that comes with the phone is fine for taking voice notes, but it uses a voice isolation algorithm which completely destroys any musical audio. When I wanted to record an idea I'd just had on the guitar, I'd record it, then listen back to a garbled mess. The Fossify voice recorder app gives the option to bypass the processed recording pipeline and just give me the raw microphone signal (which is what I want). The only thing that could make this better would be normalising the recording when its stopped to make it louder, as most recordings come out quieter than I'd like.
+**Voice Recorder** - It is worth giving a shout out to the voice recorder app by Fossify ([here](https://play.google.com/store/apps/details?id=org.fossify.voicerecorder&hl=en_GB)) which I've renamed voice recorder in the UI using Before Launcher. The stock voice recorder / memo app that comes with the phone is fine for taking voice notes, but it uses a voice isolation algorithm which completely destroys any musical audio. When I wanted to record an idea I'd just had on the guitar, I'd record it, then listen back to a garbled mess. The Fossify voice recorder app gives the option to bypass the processed recording pipeline and just give me the raw microphone signal (which is what I want). The only thing that could make this better would be normalising the recording when it's stopped to make it louder, as most recordings come out quieter than I'd like.
 
 **Other Features**
 
@@ -140,12 +140,12 @@ Here are some apps that I've started using since switching phones:
   
 - There's an audio jack, so I can be hip and trendy and wear wired headphones and earphones.
   
-- A small speaker on the bottom exists and its really not great in a technical sense, but it is good enough for listening to audiobooks or podcasts without headphones from a bedside table.
+- A small speaker on the bottom exists and it's really not great in a technical sense, but it is good enough for listening to audiobooks or podcasts without headphones from a bedside table.
   
 - I use night mode, which can be set to automatically turned on between overnight hours, and it sets the phone screen to black and white and lowers the brightness.
 
 
-**Battery Life** - I found the battery life to be fine for my use. Its worth noting that the battery life of any phone is extended dramatically by using it less, and given I used the thing for about 45 minutes of screen-time a day, I hardly found myself running out of charge. It was very pleasant to go for three days without giving it a charge. Because of its very small battery, it also takes about 30 minutes for a full charge with a 20 Watt charger, meaning I could forget to charge it overnight and quickly charge it before heading out in the morning.
+**Battery Life** - I found the battery life to be fine for my use. It's worth noting that the battery life of any phone is extended dramatically by using it less, and given I used the thing for about 45 minutes of screen-time a day, I hardly found myself running out of charge. It was very pleasant to go for three days without giving it a charge. Because of its very small battery, it also takes about 30 minutes for a full charge with a 20 Watt charger, meaning I could forget to charge it overnight and quickly charge it before heading out in the morning.
 
 **Durability** - one of my party tricks when showing people my phone is to throw it on the floor over my shoulder to demonstrate how durable and brick like it is. I don't recommend this - whilst my phone has survived and works fine, I should probably stop doing this because it might break, but it hasn't yet. Hopefully that's testament enough to its general use durability.
 
