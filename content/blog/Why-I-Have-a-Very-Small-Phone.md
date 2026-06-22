@@ -149,7 +149,9 @@ Here are some apps that I've started using since switching phones:
 
 **Durability** - one of my party tricks when showing people my phone is to throw it on the floor over my shoulder to demonstrate how durable and brick like it is. I don't recommend this - whilst my phone has survived and works fine, I should probably stop doing this because it might break, but it hasn't yet. Hopefully that's testament enough to its general use durability.
 
-# Results
+---
+
+### Results
 
 So have I achieved my objectives? I wanted to be less addicted, and more social. Has this phone helped me do that?
 
@@ -165,7 +167,9 @@ Since changing phones, there have been a few side effects that I should report: 
 
 I've also begun to experience time slightly differently. Days and weeks feel longer, and go by slower, and I suspect this is because I'm not erasing the 'time between'. The 'time between' consists of all the moments and minutes and hours between events in a day. A break between lectures; waiting for a meal to cook; gaps in the flow of the day. These are all moments that make up the 'time between' which was being completely snubbed out by doom-scrolling and spending time on my phone. Suddenly gaining this time back and needing to decide what to do with it had a massive shift on my sense of time in a day. This is a very welcome side effect!
 
-# Ending thoughts
+---
+
+### Ending thoughts
 
 Now that I've compiled my ideas and phone setup on this page, I hope it can help you use your device more intentionally, or even consider making a switch to something new for a season. This week marks two weeks after finishing University, and for the first week back, I had a go at switching back to my iPhone 12.
 
