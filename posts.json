@@ -1,5 +1,14 @@
 [
   {
+    "id": "tiny-phone",
+    "title": "Why I Have a Very Small Phone",
+    "filename": "Why-I-Have-a-Very-Small-Phone.md",
+    "date": "June 22nd, 2026",
+    "summary": " Why do I have a very small phone? Why should you consider it? In this blog, I go into detail on my very tiny phone, why I switched to it, and why you should think about it too.",
+    "color": "var(--blog-primary)",
+    "secondaryColor": "var(--blog-secondary)"
+  },
+  {
     "id": "spatial-audiobooks",
     "title": "Spatial audio for Audiobooks",
     "filename": "Spatial-Audio-Report.md",
