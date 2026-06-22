@@ -205,6 +205,8 @@
             font-weight: 600;
         }
 
+        
+
         footer { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem; }
 
         /* --- HARDWARE ACCELERATED CANVAS SYSTEM --- */
@@ -223,11 +225,38 @@
         #rainCanvas.active { opacity: 1; }
 
         /* Responsive Fallback Configuration */
-        @media (max-width: 992px) {
-            .content-container-grid { grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1rem; }
-            .sidebar-navigation-column { position: relative; top: 0; flex-direction: row; width: 100%; }
-            .btn.secondary, .rain-btn { width: auto; }
-        }
+@media (max-width: 992px) {
+    .content-container-grid { 
+        grid-template-columns: 1fr; 
+        gap: 2rem; 
+        padding: 2rem 1rem; 
+    }
+    .sidebar-navigation-column { 
+        position: relative; 
+        top: 0; 
+        flex-direction: row; 
+        width: 100%; 
+    }
+    .btn.secondary, .rain-btn { 
+        width: auto; 
+    }
+
+    /* --- THE MOBILE COMPACTNESS FIX --- */
+    .blog-post-content {
+        /* Reduce the massive desktop padding so the sheet doesn't crush the text */
+        padding: 2rem 1.25rem; 
+        border-radius: 12px;
+    }
+
+    /* Tighten blockquote margins and padding on small viewports */
+    .blog-post-content blockquote {
+        padding: 1rem 1.25rem;
+        margin: 1.5rem 0;
+    }
+}
+
+
+
     </style>
 </head>
 <body>
