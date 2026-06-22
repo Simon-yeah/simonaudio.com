@@ -91,7 +91,7 @@ Messages opens a sub-menu where I can choose to open Texts or WhatsApp
 
 ![[Screenshot_20260617-220746.png]]
 
-Retro is a social media app that I'll talk more about later, but its a distant relative of BeReal, where a few friends and I post to our weeks. I hope the utility of the calendar and map apps are self explanatory!
+Retro is a social media app that I'll talk more about later, but it is a distant relative of BeReal, where a few friends and I post to our weeks. I hope the utility of the calendar and map apps are self explanatory!
 
 When I swipe to the left, there is a notification centre. No notifications ever buzz my phone, with the exception of texts and calls. Everything else is filtered by Before Launcher and deposited in notifications grouped by apps in a nice minimal UI.
 
