@@ -39,7 +39,7 @@ Around October 2024, I had had enough. I had begun to diagnose the issue as a la
 
 You might be thinking "The answer to not having enough real social interaction is to *get out more*, to meet new people and to *make new friends*". And you'd be right!
 
-But there's something else. I wasn't just using my phone as a replacement for social interactions. I was addicted to it. I was spending about 5 hours a day using my phone, which is statistically in line with a majority of people in my generation ([source](https://www.bbc.co.uk/news/articles/crrqdw9v02e)). Maybe addiction isn't the right word, but its the word I'm going to use because even after setting out to put my phone down for a day, I could feel the tug of wanting to get it back out again to check if anyone had called, or more honestly just to doomscroll again.
+But there's something else. I wasn't just using my phone as a replacement for social interactions. I was addicted to it. I was spending about 4 and a half hours a day using my phone, which is statistically in line with a majority of people in my generation ([source](https://www.bbc.co.uk/news/articles/c39prelx2mxo)). Maybe addiction isn't the right word, but its the word I'm going to use because even after setting out to put my phone down for a day, I could feel the tug of wanting to get it back out again to check if anyone had called, or more honestly just to doomscroll again.
 
  Once I saw that when I gave so much time to my phone, I was giving my time to something which returned something far less valuable, I decided that I should delete the apps. Surely if I just take the ability to use Instagram and YouTube off of my phone, I'd stop using them? But I quickly found this wasn't enough as I'd just re-download them again. As a very strong willed person, I found my lack of willpower very disturbing.
 
@@ -153,7 +153,7 @@ Here are some apps that I've started using since switching phones:
 
 So have I achieved my objectives? I wanted to be less addicted, and more social. Has this phone helped me do that?
 
-In terms of measurable factors, here's a snapshot of a week of use, with the highest use measured. As you can see the average is around an hour a day, which is considerably better than the baseline 5 hours spent on a phone when using my iPhone 12. Not only that, but the most time spent on the example day in the screenshot is on WhatsApp, being social and planning things! This is how I want to use my phone - screen time should equal highly productive social planning and interacting.
+In terms of measurable factors, here's a snapshot of a week of use, with the highest use measured. As you can see the average is around an hour a day, which is considerably better than the baseline four and a half hours spent on a phone when using my iPhone 12. Not only that, but the most time spent on the example day in the screenshot is on WhatsApp, being social and planning things! This is how I want to use my phone - screen time should equal highly productive social planning and interacting.
 
 ![[Screenshot_20260617-231933.png]]
 
