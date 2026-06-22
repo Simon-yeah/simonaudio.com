@@ -23,7 +23,7 @@ Closer friends go on to ask me
 This page should hopefully give something of an answer to that question, along with what I've done to achieve it, and a review of anything I might do differently when buying my next phone when my small Chinese phone eventually blows up (hopefully metaphorically). First, I'll go through the circumstances that led me to switch from an iPhone 12 to the Jelly Star, then I'll talk about how I've set it up to be the best phone it can be.
 
 ---
-### Why did you get that phone?
+### "Why did you get that phone?"
 
 For my undergraduate degree, I did Tonmeister at Surrey, and I absolutely loved it. It's a four year program where the third year is a placement year, and I did my placement at a startup called Setmixer. When I say I 'did my placement at', I don't mean geographically at Setmixer because there was no central office, it was an entirely remote company. From June 2024 to June 2025, I worked for Setmixer as a fully remote DevOps team member, and I had great opportunities that taught me loads about Git version control, AWS virtual environments, and signal processing constrained by hardware and time.
 
