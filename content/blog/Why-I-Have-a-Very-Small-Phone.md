@@ -66,7 +66,7 @@ Here are the phones that I looked into:
 Cool flip phone design, runs Android Go (a stripped down version of android), but users reported suffering from lots of small irritations. A common issue was the bloatware that ships with the phone, overheating issues, keypad issues (pretty major for a phone that relies on a keypad).
 
 **Lightphone**
-The Light Phone company have, a the time of writing, released 3 phones. The latest phone is the most competent phone that realises the most of the company's vision of 'going light'. The phone is good and a stripped back experience and nice camera, with the ability to play music and podcasts that are downloaded to the phone from a computer. So far so good!
+The Light Phone company have, at the time of writing, released 3 phones. The latest phone is the most competent phone that realises the most of the company's vision of 'going light'. The phone is good and a stripped back experience and nice camera, with the ability to play music and podcasts that are downloaded to the phone from a computer. So far so good!
 
 What turned me away from getting the Lightphone 3 was the lack of WhatsApp, and the price. For a puritan dumbphone connoisseur, this is very much the point of the phone. I'd give up all the other apps, like Uber, Strava and banking apps, but WhatsApp is something I didn't want to lose. I didn't want the dumphone aesthetic to supersede the function of a smartphone; I wanted to not be tempted by the addictive aspects of a smart phone. Also, the Lightphone 3 was still on the way to being released and came in batches of manufacturing. Its also $699, which, as an underpaid intern, was not something I wanted to splash on.
 
