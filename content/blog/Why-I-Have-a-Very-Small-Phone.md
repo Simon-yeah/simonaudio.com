@@ -53,24 +53,24 @@ When I went to school in year 10, I had quite the novel flip phone. It had snake
 
 A dumbphone is a phone just for calling, texting, and maybe a bit of snake. Its sole purpose is a stripped down experience - the teleological phone experience, pure and concentrated in its purpose. The term has garnered much popularity online, where a [subreddit](https://www.reddit.com/r/dumbphones/) now exists - users ask for advice and show off their 'daily carry'
 
->[!faq]
+
 >Users posting on this subreddit have often gotten very deep into the 'intentional technology use' lifestyle, and have divided their phone functionality into several objects. Instead of one single phone that does everything, a user might carry a digital camera, mp3 player, emulator console, e-reader, notebook, headphones. Pretty cool,  but that's also a lot of stuff to carry around. I've opted very much for the phone, wallet keys approach.
 
 In 2024, my objectives in buying a new phone were pretty clear: I wanted to be less addicted, and more social. I wanted to not even be tempted to 'doom-scroll', and still be able to coordinate social activities using a phone.
 
-I started by looking into feature phones - some of which are really fun and nostalgic. Unfortunately, they lacked features I really grew to love of a smartphone - NFC payments, maps, and critically non addictive social apps like WhatsApp. I also enjoyed being able to take decent photos, and use streaming services, also non addictive for me. These are smartphone features, not feature phone features. I moved on from feature phones, and began looking into smart-dumbphones (which begins to become a bit of an oxymoron).
+I started by looking into feature phones - some of which are really fun and nostalgic. Unfortunately, they lacked features I really grew to love in a smartphone - NFC payments, maps, and critically non addictive social apps like WhatsApp. I also enjoyed being able to take decent photos, and use music streaming services, also non addictive for me. These are smartphone features, not feature phone features. I moved on from feature phones, and began looking into smart-dumbphones (which begins to become a bit of an oxymoron).
 
 Here are the phones that I looked into:
 
-**Cat S22 flip**
+**Cat S22 flip:**
 Cool flip phone design, runs Android Go (a stripped down version of android), but users reported suffering from lots of small irritations. A common issue was the bloatware that ships with the phone, overheating issues, keypad issues (pretty major for a phone that relies on a keypad).
 
-**Lightphone**
+**Lightphone:**
 The Light Phone company have, at the time of writing, released 3 phones. The latest phone is the most competent phone that realises the most of the company's vision of 'going light'. The phone is good and a stripped back experience and nice camera, with the ability to play music and podcasts that are downloaded to the phone from a computer. So far so good!
 
-What turned me away from getting the Lightphone 3 was the lack of WhatsApp, and the price. For a puritan dumbphone connoisseur, this is very much the point of the phone. I'd give up all the other apps, like Uber, Strava and banking apps, but WhatsApp is something I didn't want to lose. I didn't want the dumphone aesthetic to supersede the function of a smartphone; I wanted to not be tempted by the addictive aspects of a smart phone. Also, the Lightphone 3 was still on the way to being released and came in batches of manufacturing. Its also $699, which, as an underpaid intern, was not something I wanted to splash on.
+What turned me away from getting the Lightphone 3 was the lack of WhatsApp, and the price. For a puritan dumbphone connoisseur, this is very much the point of the phone. I'd be willing give up all the other apps, like Uber, Strava and banking apps, but WhatsApp is something I didn't want to lose. I didn't want the dumphone aesthetic to supersede the functional aspects of a smartphone - I just wanted to not be tempted by the addictive aspects of a smartphone. Also, the Lightphone 3 was still on the way to being released and came in batches of manufacturing. Its also $699, which, as an underpaid intern, was not something I wanted to splash on.
 
-**Jelly Star**
+**Jelly Star:**
 Unihertz is a Chinese phone company that make some crazy phones. They've made an industrially tough smartphone with a projector built in [here](https://www.amazon.co.uk/LMHTRADE-Smartphone-Projector-Dimensity-Cellphone-black/dp/B0FFGKL29W), they've made an android 15 keyboard phone [here](https://www.unihertz.com/products/titan-2) and they make some very small phones. I saw the Jelly star and found it so appealing I was willing to give it a try. I bought the Unihertz Jelly Star for £180, and it did everything I needed in a form factor which limited the appeal of consuming content.
 
 Sure, I *could* scroll reels on the thing - heck, I could play Genshin Impact on it thanks to its solid specs. But on such a tiny screen, anything beyond checking texts and taking photos becomes straining. Also, holding the phone is a constant reminder of my commitment to be less online.
