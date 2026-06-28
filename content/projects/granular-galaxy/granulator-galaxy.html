@@ -548,7 +548,7 @@
     </div>
 
     <script>
-        //System State
+        // System State
         let audioCtx = null;
         let audioBuffer = null;
         let masterGainNode = null;
@@ -558,25 +558,41 @@
         let nextGrainTime = 0;
         let globalRotationAngle = 0; 
         
+        // --- Voice Pooling Configuration ---
+        const VOICE_POOL_SIZE = 48; // Safe balance for simultaneous overlapping grains
+        let voicePool = [];
+        let poolIndex = 0;
+
         // --- Keyboard State & Movement Variables ---
         const keys = { 
             w: false, a: false, s: false, d: false, 
             ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false,
-            '+': false, '-': false, '=': false // Key trackers for zoom mechanics
+            '+': false, '-': false, '=': false 
         };
+        
+        // Global Pre-allocated Scratch Vectors to eliminate Garbage Collection GC jank in animate()
         const velocity = new THREE.Vector3();
-        const moveSpeed = 35.0;       
+        const scratchForward = new THREE.Vector3();
+        const scratchRight = new THREE.Vector3();
+        const scratchMoveDirection = new THREE.Vector3();
+        const scratchCamOffset = new THREE.Vector3();
+        const scratchSideVector = new THREE.Vector3();
+        const scratchZoomDirection = new THREE.Vector3();
+        const scratchDir = new THREE.Vector3();
+
+        const moveSpeed = 35.0;      
         const friction = 0.12;        
         const lookSpeed = 0.5;        
 
         // --- Zoom Boundary Constants ---
-        const MIN_ZOOM_DISTANCE = 8.0;    // Focused close up on the holographic listener core
-        const MAX_ZOOM_DISTANCE = 1800.0;  // Macro perspective to take in the wider galaxy grid
-        const ZOOM_SPEED = 0.2;           // Speed coefficient of structural distance transition
+        const MIN_ZOOM_DISTANCE = 8.0;    
+        const MAX_ZOOM_DISTANCE = 1800.0;  
+        const ZOOM_SPEED = 0.2;           
 
         const max_distance = 1000;
         const min_distance = 600;
-         // Parameters for controlling the granulator 
+
+        // Parameters for controlling the granulator 
         const params = {
             grainSize: 0.5, 
             density: 20,     
@@ -595,7 +611,6 @@
         const headerPresets = document.getElementById('header-presets-container');
         const headerSelect = document.getElementById('header-track-select');
 
-        // --- Sync HTML Sliders with Default Params on Load ---
         function initSliderDefaults() {
             document.getElementById('grain-size').value = params.grainSize * 1000;
             document.getElementById('val-size').innerText = params.grainSize * 1000;
@@ -609,7 +624,7 @@
         }
         initSliderDefaults();
 
-        // Hooking up the UI sliders
+        // UI Listeners
         document.getElementById('grain-size').addEventListener('input', (e) => {
             const val = parseInt(e.target.value);
             document.getElementById('val-size').innerText = val;
@@ -637,11 +652,10 @@
             }
         });
 
-        //Three.js Setup
+        // Three.js Setup
         const container = document.getElementById('canvas-container'); 
         const scene = new THREE.Scene(); 
 
-        // camera setup
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
         camera.position.set(0, 35, 60);
 
@@ -650,26 +664,10 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
         container.appendChild(renderer.domElement);
 
-        // --- Post-Processing Setup (Bloom Pipeline) ---
-        const renderScene = new THREE.RenderPass(scene, camera);
-
-        const bloomPass = new THREE.UnrealBloomPass(
-            new THREE.Vector2(window.innerWidth, window.innerHeight),
-            1.6,  // Bloom strength
-            0.4,  // Radius
-            0.15  // Threshold
-        );
-
-        const composer = new THREE.EffectComposer(renderer);
-        composer.addPass(renderScene);
-        composer.addPass(bloomPass);
-
-        // Ensure post-processing canvas matches viewport updates
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            composer.setSize(window.innerWidth, window.innerHeight);
         });
 
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
@@ -677,17 +675,15 @@
         controls.dampingFactor = 0.05;
         controls.maxPolarAngle = Math.PI / 2 - 0.01; 
 
-        // --- Upgraded Holographic Energy Core Listener ---
+        // Holographic Energy Core Listener
         const listenerGroup = new THREE.Group();
         scene.add(listenerGroup);
 
-        // Core Inner Sphere (Bright emissive core)
         const coreGeo = new THREE.SphereGeometry(0.6, 32, 32);
         const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
         const coreMesh = new THREE.Mesh(coreGeo, coreMat);
         listenerGroup.add(coreMesh);
 
-        // Mid Shield (Geometric Wireframe Matrix)
         const midGeo = new THREE.IcosahedronGeometry(1.2, 2);
         const midMat = new THREE.MeshBasicMaterial({
             color: 0x00ffcc,
@@ -698,7 +694,6 @@
         const midMesh = new THREE.Mesh(midGeo, midMat);
         listenerGroup.add(midMesh);
 
-        // Outer Resonance Rings
         const ringGeo = new THREE.RingGeometry(1.6, 1.65, 64);
         const ringMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc, side: THREE.DoubleSide, transparent: true, opacity: 0.7 });
         const ringMesh1 = new THREE.Mesh(ringGeo, ringMat);
@@ -709,9 +704,8 @@
         ringMesh2.rotation.y = Math.PI / 2;
         listenerGroup.add(ringMesh2);
 
-        // --- Create Distant Background Starfield ---
         function generateBackgroundStars() {
-            const starCount = 3000;
+            const starCount = 15000;
             const geom = new THREE.BufferGeometry();
             const positions = new Float32Array(starCount * 3);
 
@@ -742,7 +736,6 @@
         }
         generateBackgroundStars();
 
-        // --- Keyboard Event Listeners ---
         window.addEventListener('keydown', (e) => {
             if (e.key in keys) keys[e.key] = true;
             const lowerKey = e.key.toLowerCase();
@@ -755,7 +748,6 @@
             if (lowerKey in keys) keys[lowerKey] = false;
         });
 
-        // --- Explicit Audio Activation Routine ---
         async function initAudioContext() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -765,6 +757,7 @@
             }
             if (!masterGainNode) {
                 setupAudioGraph();
+                initVoicePool(); // Allocate node instances on generation boot
             }
         }
 
@@ -783,7 +776,24 @@
             masterGainNode.connect(audioCtx.destination);
         }
 
-        // --- Header Select Router Engine ---
+        // Preallocate static runtime Web Audio voice graphs to maximize engine throughput
+        function initVoicePool() {
+            voicePool = [];
+            for (let i = 0; i < VOICE_POOL_SIZE; i++) {
+                const gainNode = audioCtx.createGain();
+                const indPanner = audioCtx.createPanner();
+                indPanner.panningModel = 'HRTF';
+                
+                gainNode.connect(indPanner);
+                indPanner.connect(masterGainNode);
+
+                voicePool.push({
+                    gain: gainNode,
+                    panner: indPanner
+                });
+            }
+        }
+
         function handleDropdownSelection(selectNode) {
             const path = selectNode.value;
             const text = selectNode.options[selectNode.selectedIndex].text;
@@ -792,7 +802,6 @@
             }
         }
 
-        // --- Async Preset Track Loader ---
         async function loadPresetTrack(index, url, trackName) {
             headerSelect.value = url;
             const buttons = document.querySelectorAll('.preset-btn');
@@ -805,7 +814,6 @@
             if(activeBtn) activeBtn.classList.remove('loading');
         }
 
-        // Core underlying Fetch routing pattern
         async function executeAudioFetch(url, trackName) {
             await initAudioContext();
             headerSelect.classList.add('loading');
@@ -813,7 +821,7 @@
 
             try {
                 const response = await fetch(url);
-                if (!response.ok) throw new Error(`HTTP status code failure: ${response.status}`);
+                if (!response.ok) throw new Error(`HTTP failure: ${response.status}`);
                 const arrayBuffer = await response.arrayBuffer();
                 
                 audioCtx.decodeAudioData(arrayBuffer, function(buffer) {
@@ -822,7 +830,6 @@
                     
                     gatewayContainer.style.display = 'none';
                     headerPresets.classList.add('visible');
-                    
                     controlsPanel.classList.add('visible');
                     document.getElementById('instructions').style.display = 'block';
                     
@@ -847,7 +854,6 @@
             }
         }
 
-        // --- Drag & Drop Hooks ---
         window.addEventListener('dragover', (e) => e.preventDefault(), false);
         window.addEventListener('drop', (e) => e.preventDefault(), false);
 
@@ -890,7 +896,6 @@
                     
                     gatewayContainer.style.display = 'none';
                     headerPresets.classList.add('visible');
-                    
                     controlsPanel.classList.add('visible');
                     document.getElementById('instructions').style.display = 'block';
                     
@@ -908,15 +913,13 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // --- Cloud Generation ---
         let particleSystem = null;
-
 
         function generateGranularCloud() {
             if (particleSystem) scene.remove(particleSystem);
             granuleData = [];
 
-            const totalGrains = 1000; 
+            const totalGrains = 1500; 
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(totalGrains * 3);
             const colors = new Float32Array(totalGrains * 3);
@@ -924,11 +927,10 @@
             const duration = audioBuffer.duration;
             const colorObj = new THREE.Color();
 
-            // --- Premium Neon Galactic Palette ---
-            const colorCore    = new THREE.Color(0xff00aa); // Luminous Magenta Core
-            const colorMid     = new THREE.Color(0x7a00ff); // Electric Deep Violet
-            const colorOuter   = new THREE.Color(0x0055ff); // Vivid Royal Blue
-            const colorNeonPop = new THREE.Color(0x00f5ff); // Cyan highlight splash
+            const colorCore    = new THREE.Color(0xff00aa); 
+            const colorMid     = new THREE.Color(0x7a00ff); 
+            const colorOuter   = new THREE.Color(0x0055ff); 
+            const colorNeonPop = new THREE.Color(0x00f5ff); 
 
             for (let i = 0; i < totalGrains; i++) {
                 const angle = Math.random() * Math.PI * 2;
@@ -944,36 +946,24 @@
                 const ratio = i / totalGrains;
                 const sampleOffset = ratio * duration; 
                 
-                // --- THE SAUCE: TIMELINE PROFILE WITH SPATIAL JITTER ---
-                // Mix the track ratio with a touch of spatial noise so the gradient fields
-                // swirl softly together instead of forming rigid geometric walls.
                 const cloudNoise = Math.sin(angle * 2.0 + radius * 0.1) * 0.15;
                 const dynamicProgress = Math.min(Math.max(ratio + cloudNoise, 0.0), 1.0);
 
-                // Two-stage smooth blending across the main track duration
                 if (dynamicProgress < 0.5) {
-                    // Core to mid-track: Magenta transitioning to deep electric violet
                     colorObj.copy(colorCore).lerp(colorMid, dynamicProgress * 2.0);
                 } else {
-                    // Mid-track to tail: Deep violet easing into rich royal blue
                     colorObj.copy(colorMid).lerp(colorOuter, (dynamicProgress - 0.5) * 2.0);
                 }
 
-                // --- STELLAR INSTABILITY VARIETY ---
                 const varietySeed = Math.random();
                 if (varietySeed > 0.90) {
-                    // 10% of grains get a hyper-vibrant neon cyan tint for crisp contrast edges
                     colorObj.lerp(colorNeonPop, 0.7);
                 } else if (varietySeed < 0.05) {
-                    // 5% are generated as blindingly hot white core stars right off the bat
                     colorObj.setRGB(1.0, 1.0, 1.0);
                 }
 
-                // --- RADIAL LUMINOSITY FALLOFF ---
-                // Give the inner core region a higher default brightness multiplier to feed the bloom pass,
-                // while letting the outer blue edges stay rich, moody, and saturated.
                 const coreProximity = 1.0 - (radius / 70); 
-                const intensityMultiplier = 1.8 + (coreProximity * 1.6); // Inner ~3.4, Outer ~1.8
+                const intensityMultiplier = 1.8 + (coreProximity * 1.6); 
 
                 colors[i * 3]     = colorObj.r * intensityMultiplier;
                 colors[i * 3 + 1] = colorObj.g * intensityMultiplier;
@@ -993,7 +983,7 @@
             const pTexture = createCircleTexture();
             
             const material = new THREE.PointsMaterial({
-                size: 2.4,             // Bumped up slightly so the HDR particles bloom beautifully
+                size: 2.4,
                 map: pTexture,
                 vertexColors: true,
                 transparent: true,
@@ -1040,7 +1030,6 @@
             particleSystem = new THREE.Points(geometry, material);
             scene.add(particleSystem);
         }
-        
 
         function createCircleTexture() {
             const canvas = document.createElement('canvas');
@@ -1059,29 +1048,25 @@
             return texture;
         }
 
-        // --- Processing Engine ---
         function scheduler() {
             if (!isPlaying) return;
             
-            // Safety catch for background execution / tab throttling loops
             if (nextGrainTime < audioCtx.currentTime) {
                 nextGrainTime = audioCtx.currentTime;
             }
 
-            while (nextGrainTime < audioCtx.currentTime + 0.08) {
+            // Increased lookahead windows marginally to safely accommodate UI-thread loops
+            while (nextGrainTime < audioCtx.currentTime + 0.12) {
                 spawnGrain(nextGrainTime);
                 nextGrainTime += (1.0 / params.density);
             }
-            setTimeout(scheduler, 20);
+            setTimeout(scheduler, 25);
         }
 
         function spawnGrain(time) {
             if (!audioBuffer || !particleSystem) return;
 
             const targetPos = controls.target;
-            let weights = [];
-            let totalWeight = 0;
-
             const rangeLimit = params.spray; 
             const rangeLimitSq = rangeLimit * rangeLimit;
 
@@ -1091,8 +1076,15 @@
             const localTargetX = targetPos.x * cosR - targetPos.z * sinR;
             const localTargetZ = targetPos.x * sinR + targetPos.z * cosR;
 
-            for (let i = 0; i < granuleData.length; i++) {
-                const gd = granuleData[i];
+            // PERFORMANCE FIX: Stochastic Sampling. Instead of an O(N) evaluation over all 600 particles 
+            // every single grain step, sample a subset of candidates to calculate optimal weight distribution.
+            let weights = [];
+            let totalWeight = 0;
+            const samplePoolSize = 40; 
+
+            for (let i = 0; i < samplePoolSize; i++) {
+                const index = Math.floor(Math.random() * granuleData.length);
+                const gd = granuleData[index];
                 
                 const dx = gd.x - localTargetX;
                 const dy = gd.y - targetPos.y;
@@ -1102,7 +1094,7 @@
                 if (distSq < rangeLimitSq) {
                     const dist = Math.sqrt(distSq);
                     const weight = Math.pow(1 - (dist / rangeLimit), 2);
-                    weights.push({ index: i, weight: weight, rx: gd.x, ry: gd.y, rz: gd.z });
+                    weights.push({ index: index, weight: weight, rx: gd.x, ry: gd.y, rz: gd.z });
                     totalWeight += weight;
                 }
             }
@@ -1121,29 +1113,31 @@
 
             const chosen = weights[selectedNode];
 
+            // PERFORMANCE FIX: Retrieve a pre-warmed voice path from our pre-allocated node pool.
+            const voice = voicePool[poolIndex];
+            poolIndex = (poolIndex + 1) % VOICE_POOL_SIZE;
+
             const source = audioCtx.createBufferSource();
             source.buffer = audioBuffer;
 
             const sizeOffset = (Math.random() - 0.5) * 0.02;
             const currentDuration = Math.max(0.01, params.grainSize + sizeOffset);
             
-            const gainNode = audioCtx.createGain();
-            gainNode.gain.setValueAtTime(0.0, time);
-            gainNode.gain.linearRampToValueAtTime(0.5, time + (currentDuration * 0.15)); 
-            gainNode.gain.setValueAtTime(0.5, time + (currentDuration * 0.8));
-            gainNode.gain.linearRampToValueAtTime(0.0, time + currentDuration);         
+            // Reconfigure pre-existing node settings over rewriting graph links
+            voice.gain.gain.setValueAtTime(0.0, time);
+            voice.gain.gain.linearRampToValueAtTime(0.5, time + (currentDuration * 0.15)); 
+            voice.gain.gain.setValueAtTime(0.5, time + (currentDuration * 0.8));
+            voice.gain.gain.linearRampToValueAtTime(0.0, time + currentDuration);         
 
-            const individualPanner = audioCtx.createPanner();
-            individualPanner.panningModel = 'HRTF';
-            individualPanner.setPosition(chosen.rx, chosen.ry, chosen.rz);
+            voice.panner.setPosition(chosen.rx, chosen.ry, chosen.rz);
 
-            source.connect(gainNode);
-            gainNode.connect(individualPanner);
-            individualPanner.connect(masterGainNode);
+            source.connect(voice.gain);
 
             const grainMeta = granuleData[chosen.index];
             const playbackOffset = Math.min(audioBuffer.duration - currentDuration, Math.max(0, grainMeta.sampleOffset + (Math.random() - 0.5) * 0.05));
+            
             source.start(time, playbackOffset, currentDuration);
+            // Source links automatically drop from execution nodes on termination flags
             source.stop(time + currentDuration + 0.02);
             
             triggerVisualPulse(chosen.index);
@@ -1154,6 +1148,8 @@
             const colorAttribute = particleSystem.geometry.attributes.color;
             const origColor = granuleData[index].color;
             
+            // Setting a flash is acceptable, but notice that continuous buffer re-uploads across frames 
+            // should remain minimized where cloud densities are scaled higher.
             colorAttribute.setXYZ(index, 2.5, 2.5, 2.5); 
             colorAttribute.needsUpdate = true;
 
@@ -1172,31 +1168,29 @@
             const deltaTime = Math.min(clock.getDelta(), 0.1); 
             const elapsedTime = clock.getElapsedTime();
 
-            // --- Camera Look/Orbit Axis Modifications ---
+            // --- Camera Vector Modifications ---
             if (keys.ArrowLeft || keys.ArrowRight || keys.ArrowUp || keys.ArrowDown) {
-                const camOffset = new THREE.Vector3().subVectors(camera.position, controls.target);
+                scratchCamOffset.subVectors(camera.position, controls.target);
                 
-                if (keys.ArrowLeft) camOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), lookSpeed * deltaTime);
-                if (keys.ArrowRight) camOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), -lookSpeed * deltaTime);
+                if (keys.ArrowLeft) scratchCamOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), lookSpeed * deltaTime);
+                if (keys.ArrowRight) scratchCamOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), -lookSpeed * deltaTime);
                 
                 if (keys.ArrowUp || keys.ArrowDown) {
-                    const sideVector = new THREE.Vector3().crossVectors(camOffset, camera.up).normalize();
+                    scratchSideVector.crossVectors(scratchCamOffset, camera.up).normalize();
                     const angleDelta = lookSpeed * deltaTime;
                     
-                    if (keys.ArrowUp) camOffset.applyAxisAngle(sideVector, angleDelta);
-                    if (keys.ArrowDown) camOffset.applyAxisAngle(sideVector, -angleDelta);
+                    if (keys.ArrowUp) scratchCamOffset.applyAxisAngle(scratchSideVector, angleDelta);
+                    if (keys.ArrowDown) scratchCamOffset.applyAxisAngle(scratchSideVector, -angleDelta);
                 }
                 
-                camera.position.copy(controls.target).add(camOffset);
+                camera.position.copy(controls.target).add(scratchCamOffset);
             }
 
             // --- Smooth Zoom Processing Engine ---
             if (keys['+'] || keys['='] || keys['-']) {
-                // Get vector pointing from control target to current camera position
-                const zoomDirection = new THREE.Vector3().subVectors(camera.position, controls.target);
-                const currentDistance = zoomDirection.length();
+                scratchZoomDirection.subVectors(camera.position, controls.target);
+                const currentDistance = scratchZoomDirection.length();
                 
-                // Establish continuous calculation boundaries based on frame ticking rates
                 let distanceFactor = currentDistance;
                 if (keys['+'] || keys['=']) {
                     distanceFactor -= ZOOM_SPEED * currentDistance * deltaTime;
@@ -1205,36 +1199,33 @@
                     distanceFactor += ZOOM_SPEED * currentDistance * deltaTime;
                 }
                 
-                // Enforce minimum and maximum scalar constraint limits
                 distanceFactor = Math.max(MIN_ZOOM_DISTANCE, Math.min(MAX_ZOOM_DISTANCE, distanceFactor));
                 
-                // Rescale the directional offset vector and project back onto target coordinates
-                zoomDirection.normalize().multiplyScalar(distanceFactor);
-                camera.position.copy(controls.target).add(zoomDirection);
+                scratchZoomDirection.normalize().multiplyScalar(distanceFactor);
+                camera.position.copy(controls.target).add(scratchZoomDirection);
             }
 
             // --- Movement Physics Frame Steps ---
-            const forward = new THREE.Vector3();
-            camera.getWorldDirection(forward);
-            forward.y = 0; 
-            forward.normalize();
+            camera.getWorldDirection(scratchForward);
+            scratchForward.y = 0; 
+            scratchForward.normalize();
 
-            const right = new THREE.Vector3();
-            right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize(); 
+            scratchRight.crossVectors(scratchForward, new THREE.Vector3(0, 1, 0)).normalize(); 
 
-            const moveDirection = new THREE.Vector3();
-            if (keys.w) moveDirection.add(forward);
-            if (keys.s) moveDirection.sub(forward);
-            if (keys.d) moveDirection.add(right);
-            if (keys.a) moveDirection.sub(right);
-            moveDirection.normalize();
+            scratchMoveDirection.set(0, 0, 0);
+            if (keys.w) scratchMoveDirection.add(scratchForward);
+            if (keys.s) scratchMoveDirection.sub(scratchForward);
+            if (keys.d) scratchMoveDirection.add(scratchRight);
+            if (keys.a) scratchMoveDirection.sub(scratchRight);
+            scratchMoveDirection.normalize();
 
-            const targetVelocity = moveDirection.multiplyScalar(moveSpeed);
+            const targetVelocity = scratchMoveDirection.multiplyScalar(moveSpeed);
             velocity.lerp(targetVelocity, friction);
 
-            const frameMovement = velocity.clone().multiplyScalar(deltaTime);
-            controls.target.add(frameMovement);
-            camera.position.add(frameMovement);
+            // Reusing local math operations inside global scope profiles
+            scratchMoveDirection.copy(velocity).multiplyScalar(deltaTime);
+            controls.target.add(scratchMoveDirection);
+            camera.position.add(scratchMoveDirection);
 
             controls.target.y = 0;
             controls.update();
@@ -1243,10 +1234,8 @@
             if (audioCtx && pannerNode) {
                 const target = controls.target;
                 
-                // Track visual core layout onto spatial matrix center
                 listenerGroup.position.copy(target);
                 
-                // Idle Core animations
                 coreMesh.scale.setScalar(1.0 + Math.sin(elapsedTime * 8.0) * 0.15);
                 midMesh.rotation.y -= deltaTime * 0.5;
                 midMesh.rotation.x += deltaTime * 0.2;
@@ -1263,13 +1252,12 @@
 
                 audioCtx.listener.setPosition(relativeAudioX, target.y, relativeAudioZ);
                 
-                const dir = new THREE.Vector3();
-                camera.getWorldDirection(dir);
+                camera.getWorldDirection(scratchDir);
                 
-                const orientedX = dir.x * cosInv - dir.z * sinInv;
-                const orientedZ = dir.x * sinInv + dir.z * cosInv;
+                const orientedX = scratchDir.x * cosInv - scratchDir.z * sinInv;
+                const orientedZ = scratchDir.x * sinInv + scratchDir.z * cosInv;
                 
-                audioCtx.listener.setOrientation(orientedX, dir.y, orientedZ, 0, 1, 0);
+                audioCtx.listener.setOrientation(orientedX, scratchDir.y, orientedZ, 0, 1, 0);
             }
 
             if (particleSystem) {
@@ -1283,11 +1271,10 @@
                 particleSystem.material.opacity = 0.82 + Math.sin(elapsedTime * 0.8) * 0.08;
             }
 
-            // Execute pass through Bloom composer engine pipeline
-            composer.render();
+            renderer.render(scene, camera);
         }
         animate();
-    </script>
+</script>
 
 </body>
 </html>
