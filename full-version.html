@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Choir// Simon Audio</title>
+    <style>
+        /* --- CYBERPUNK CELTIC FANTASY DESIGN SYSTEM --- */
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght=600;700&family=Cinzel+Decorative:wght=700&display=swap');
+
+        :root {
+            --bg-dark-obsidian: #12100e;
+            --panel-slate: #1c1814;
+            --border-bronze: #4a3b2c;
+            --text-gold: #dfc2a5;
+            --neon-amber: #e07a5f;
+            --mystic-teal: #4ea8de;
+            --glow-shadow: 0 0 15px rgba(224, 122, 95, 0.4);
+            --teal-glow: 0 0 15px rgba(78, 168, 222, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark-obsidian);
+            color: var(--text-gold);
+            font-family: 'Quicksand', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 25px;
+            overflow: hidden;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed var(--border-bronze);
+        }
+
+        h1 {
+            font-family: 'Cinzel Decorative', Georgia, serif;
+            color: var(--neon-amber);
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px rgba(224, 122, 95, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #8a7663;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        #ritual-monitor {
+            font-family: 'Cinzel Decorative', serif;
+            font-weight: 700;
+            color: var(--mystic-teal);
+            text-shadow: var(--teal-glow);
+            letter-spacing: 1px;
+        }
+
+        main {
+            flex-grow: 1;
+            position: relative;
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 25px;
+            height: calc(100% - 140px);
+        }
+
+        /* Skeuomorphic Terminal Console Deck */
+        .ritual-deck {
+            background-color: var(--panel-slate);
+            border: 3px solid var(--border-bronze);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 0.95rem;
+            color: var(--neon-amber);
+            border-bottom: 1px solid var(--border-bronze);
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        /* Custom Skeuomorphic Selector Grid Controls */
+        .rune-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .rune-btn {
+            background: #26201a;
+            border: 2px solid var(--border-bronze);
+            border-radius: 8px;
+            color: var(--text-gold);
+            padding: 10px 0;
+            font-family: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .rune-btn:hover {
+            border-color: var(--neon-amber);
+            background: #2f2720;
+        }
+
+        .rune-btn.selected {
+            background: var(--neon-amber);
+            color: #12100e;
+            border-color: #fff;
+            box-shadow: var(--glow-shadow);
+            transform: scale(0.96);
+        }
+
+        .gem-deck {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .gem-btn {
+            background: #1a2226;
+            border: 2px solid #23353d;
+            border-radius: 10px;
+            color: #a4c3d2;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .gem-btn:hover {
+            border-color: var(--mystic-teal);
+            background: #202d35;
+        }
+
+        .gem-btn.selected {
+            background: var(--mystic-teal);
+            color: #12100e;
+            border-color: #fff;
+            box-shadow: var(--teal-glow);
+        }
+
+        /* Central Ignition Trigger Matrix */
+        .ignition-btn {
+            background: linear-gradient(135deg, #b55338, var(--neon-amber));
+            color: white;
+            border: 2px solid #fff;
+            padding: 15px;
+            font-family: 'Cinzel Decorative', serif;
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: var(--glow-shadow);
+            transition: transform 0.1s, filter 0.2s;
+            margin-top: 5px;
+        }
+
+        .ignition-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .ignition-btn:active {
+            transform: scale(0.98);
+        }
+
+        .ignition-btn.active-relic {
+            background: linear-gradient(135deg, #2a6f97, var(--mystic-teal));
+            box-shadow: var(--teal-glow);
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        #visualizer-canvas {
+            width: 100%;
+            height: 100%;
+            background-color: #161310;
+            border: 3px solid var(--border-bronze);
+            border-radius: 16px;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+        }
+
+        /* Floating Status Dashboard Overhead Layer */
+        .step-indicator-tray {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            background: rgba(28, 24, 20, 0.85);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-bronze);
+        }
+
+        .step-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #332920;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .step-light.active {
+            background: var(--neon-amber);
+            box-shadow: var(--glow-shadow);
+        }
+
+        footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px dashed var(--border-bronze);
+            padding-top: 15px;
+            font-size: 0.85rem;
+            color: #8a7663;
+        }
+
+        a.back-link {
+            color: var(--text-gold);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        a.back-link:hover {
+            color: var(--neon-amber);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>The Choral Relic Core</h1>
+            <p class="subtitle">Cyber-Celtic Automaton Sequence Terminal // Simon Audio Matrix</p>
+        </div>
+        <div>
+            <span id="ritual-monitor">RELIC OFFLINE</span>
+        </div>
+    </header>
+
+    <main>
+
+        <div class="ritual-deck">
+            <div>
+                <div class="section-title">Vocal Texture Profile</div>
+                <div class="rune-selector-grid" id="texture-deck" style="grid-template-columns: repeat(3, 1fr);">
+                    <button class="rune-btn selected" data-texture="ethereal">Choir<span style="font-size:0.6rem; display:block; opacity:0.6;">Airy</span></button>
+                    <button class="rune-btn" data-texture="drone">Drone<span style="font-size:0.6rem; display:block; opacity:0.6;">Throat</span></button>
+                    <button class="rune-btn" data-texture="whisper">Whisper<span style="font-size:0.6rem; display:block; opacity:0.6;">Breath</span></button>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">Select Stone</div>
+                <div class="gem-deck">
+                    <button class="gem-btn selected" data-key="A">Amythest</button>
+                    <button class="gem-btn" data-key="B">Beryl</button>
+                    <button class="gem-btn" data-key="C">Carnelion</button>
+                    <button class="gem-btn" data-key="D">Diamond</button>
+                    <button class="gem-btn" data-key="E">Emerald</button>
+                    <button class="gem-btn" data-key="F">Feldspar</button>
+                    <button class="gem-btn" data-key="G">Garnet</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">Sequence Runes</div>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <div class="control-group">
+                        <label style="font-size:0.7rem; color:var(--text-gold);">Step 1 Chord</label>
+                        <div class="rune-selector-grid" data-step="0">
+                            <button class="rune-btn selected" data-val="0">Ⅰ</button>
+                            <button class="rune-btn" data-val="1">II</button>
+                            <button class="rune-btn" data-val="2">III</button>
+                            <button class="rune-btn" data-val="3">IV</button>
+                            <button class="rune-btn" data-val="4">V</button>
+                            <button class="rune-btn" data-val="5">VI</button>
+                            <button class="rune-btn" data-val="6">VII</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label style="font-size:0.7rem; color:var(--text-gold);">Step 2 Chord</label>
+                        <div class="rune-selector-grid" data-step="1">
+                            <button class="rune-btn" data-val="0">Ⅰ</button>
+                            <button class="rune-btn" data-val="1">II</button>
+                            <button class="rune-btn selected" data-val="2">III</button>
+                            <button class="rune-btn" data-val="3">IV</button>
+                            <button class="rune-btn" data-val="4">V</button>
+                            <button class="rune-btn" data-val="5">VI</button>
+                            <button class="rune-btn" data-val="6">VII</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label style="font-size:0.7rem; color:var(--text-gold);">Step 3 Chord</label>
+                        <div class="rune-selector-grid" data-step="2">
+                            <button class="rune-btn" data-val="0">Ⅰ</button>
+                            <button class="rune-btn selected" data-val="1">II</button>
+                            <button class="rune-btn" data-val="2">III</button>
+                            <button class="rune-btn" data-val="3">IV</button>
+                            <button class="rune-btn" data-val="4">V</button>
+                            <button class="rune-btn" data-val="5">VI</button>
+                            <button class="rune-btn" data-val="6">VII</button>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label style="font-size:0.7rem; color:var(--text-gold);">Step 4 Chord</label>
+                        <div class="rune-selector-grid" data-step="3">
+                            <button class="rune-btn" data-val="0">Ⅰ</button>
+                            <button class="rune-btn" data-val="1">II</button>
+                            <button class="rune-btn" data-val="2">III</button>
+                            <button class="rune-btn" data-val="3">IV</button>
+                            <button class="rune-btn" data-val="4">V</button>
+                            <button class="rune-btn selected" data-val="5">VI</button>
+                            <button class="rune-btn" data-val="6">VII</button>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">Ritual Tempo</div>
+                <div class="rune-selector-grid" id="tempo-deck" style="grid-template-columns: repeat(2, 1fr);">
+                    <button class="rune-btn" data-ms="2500">Largo</button>
+                    <button class="rune-btn selected" data-ms="2000">Adagio</button>
+                </div>
+            </div>
+
+            <button id="ignition-trigger" class="ignition-btn">Awaken</button>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="visualizer-canvas"></canvas>
+            
+            <div class="step-indicator-tray">
+                <div class="step-light" id="light-0"></div>
+                <div class="step-light" id="light-1"></div>
+                <div class="step-light" id="light-2"></div>
+                <div class="step-light" id="light-3"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <a href="index.html" class="back-link">Burn it down (return to simonaudio.com)</a>
+        <p>&copy; 2026 Simon Audio</p>
+    </footer>
+
+    <script>
+        let audioCtx = null;
+        let isRelicAwake = false;
+        let masterGain = null;
+        let lowpassFilter = null;
+        let masterCompressor = null; 
+        let analyser = null;
+
+        // --- LANDSCAPE NODES ---
+        let earthBassOsc = null;
+        let earthBassGain = null;
+        let valleyReverbNode = null;
+        let valleyFeedbackGain = null;
+
+        // Formants mapping F1, F2, F3 frequencies, dB gains, and Q factors
+        const formants = {
+            ethereal: [
+                { f: 800, g: 14, q: 7 },  
+                { f: 1150, g: 11, q: 6 }, 
+                { f: 2900, g: 8,  q: 4 }  
+            ],
+            drone: [
+                { f: 350, g: 16, q: 9 },  
+                { f: 750, g: 12, q: 6 },  
+                { f: 2200, g: 3,  q: 3 }
+            ],
+            whisper: [
+                { f: 1050, g: 9,  q: 4 },
+                { f: 1350, g: 9,  q: 4 },
+                { f: 3350, g: 14, q: 5 }  
+            ]
+        };
+
+        let formantFilterBank = [];
+
+        // UI Bindings
+        const ignitionBtn = document.getElementById('ignition-trigger');
+        const canvas = document.getElementById('visualizer-canvas');
+        const ctx = canvas.getContext('2d');
+        const monitorText = document.getElementById('ritual-monitor');
+
+        const keyRoots = {
+            "A": 220.00, "B": 246.94, "C": 261.63, "D": 293.66, "E": 164.81, "F": 174.61, "G": 196.00
+        };
+
+        const progressionChords = [
+            { name: "I", intervals:[1.0, 1.2, 1.5, 1.777]},
+            { name: "II", intervals:[1.125, 1.333, 1.666, 2.0]},
+            { name: "III", intervals:[1.2, 1.5, 1.777, 2.25]},
+            { name: "IV", intervals:[1.333, 1.666, 2.0, 2.4]},
+            { name: "V", intervals:[1.5, 1.777, 2.25, 2.666]},
+            { name: "VI", intervals:[1.666, 2.0, 2.4, 3.0]},
+            { name: "VII", intervals:[1.777, 2.25, 2.666, 3.333]},
+        ];
+
+        let activeKey = "A";
+        let activeTexture = "ethereal";
+        let userSequence = [0, 2, 1, 5]; 
+        let currentSequenceStep = 0;
+        let sequenceClockTimer = null;
+        let stepIntervalTime = 2000;
+        let statues = [];
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class RelicStatue {
+            constructor(id, x, y, width, height, runeChar) {
+                this.id = id; this.x = x; this.y = y; this.width = width; this.height = height; this.runeChar = runeChar;
+                this.pulseAnim = 0; 
+                this.oscs = []; 
+                this.gainNode = null;
+                this.pannerNode = null;
+                
+                this.vibratoSpeed = 4.5 + (id * 0.37) + Math.random() * 0.4;
+                this.vibratoPhase = Math.random() * Math.PI * 2;
+                this.driftSeed = Math.random() * 100;
+            }
+
+            get activeCalculatedFreq() {
+                return keyRoots[activeKey] * progressionChords[userSequence[currentSequenceStep]].intervals[this.id];
+            }
+
+            initAudio() {
+                this.gainNode = audioCtx.createGain();
+                this.gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+
+                this.pannerNode = audioCtx.createStereoPanner();
+                this.pannerNode.pan.setValueAtTime((this.id - 1.5) * 0.75, audioCtx.currentTime);
+
+                const types = ['triangle', 'sawtooth', 'triangle'];
+                const detunes = [-16 + (Math.random()*4), 0, 15 - (Math.random()*4)]; 
+
+                types.forEach((type, idx) => {
+                    let osc = audioCtx.createOscillator();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(this.activeCalculatedFreq, audioCtx.currentTime);
+                    osc.detune.setValueAtTime(detunes[idx], audioCtx.currentTime);
+                    osc.connect(this.gainNode);
+                    osc.start();
+                    this.oscs.push(osc);
+                });
+
+                this.gainNode.connect(this.pannerNode);
+                this.pannerNode.connect(masterGain);
+                
+                formantFilterBank.forEach(filter => {
+                    this.pannerNode.connect(filter);
+                });
+            }
+
+            updateAudioDynamics(time) {
+                if (!this.oscs.length) return;
+                
+                const targetBaseFreq = this.activeCalculatedFreq;
+                
+                const slowDrift = Math.sin(time * 0.8 + this.driftSeed) * 1.8;
+                const naturalVibrato = Math.sin(time * this.vibratoSpeed + this.vibratoPhase) * (activeTexture === "whisper" ? 4.5 : 2.2);
+                const jitter = (Math.sin(time * 23.0 + this.id) * Math.cos(time * 17.0)) * 0.4; 
+                
+                const totalPitchOffset = slowDrift + naturalVibrato + jitter;
+
+                this.oscs.forEach((osc) => {
+                    osc.frequency.setTargetAtTime(targetBaseFreq + totalPitchOffset, audioCtx.currentTime, 0.35);
+                });
+
+                const microVolumeFluctuation = 1.0 + (Math.sin(time * 3.2 + this.id) * 0.08) - (Math.abs(slowDrift) * 0.015);
+                this.gainNode.gain.setTargetAtTime(Math.max(0, this.currentBaseVolume * microVolumeFluctuation * 0.14), audioCtx.currentTime, 0.1);
+            }
+
+            triggerVoice(volume, rampTime) {
+                this.currentBaseVolume = volume;
+                if (this.gainNode) {
+                    this.gainNode.gain.setTargetAtTime(volume * 0.14, audioCtx.currentTime, rampTime);
+                }
+            }
+
+            kill() {
+                this.oscs.forEach(o => { try { o.stop(); } catch(e){} });
+                this.oscs = [];
+            }
+        }
+
+        function triggerTreePercussion(time, toneType) {
+            if (!audioCtx || !isRelicAwake) return;
+
+            const bufferSize = audioCtx.sampleRate * 0.15; 
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            const noiseNode = audioCtx.createBufferSource();
+            noiseNode.buffer = buffer;
+
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = "bandpass";
+            
+            if (toneType === 'snap') {
+                filter.frequency.setValueAtTime(120 + Math.random() * 300, time);
+                filter.Q.setValueAtTime(15, time);
+            } else {
+                filter.frequency.setValueAtTime(800 + Math.random() * 1200, time);
+                filter.Q.setValueAtTime(4, time);
+            }
+
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(toneType === 'snap' ? 0.25 : 0.08, time);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, time + (toneType === 'snap' ? 0.08 : 0.14));
+
+            const panner = audioCtx.createStereoPanner();
+            panner.pan.setValueAtTime(Math.random() * 1.8 - 0.9, time);
+
+            noiseNode.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(panner);
+            
+            panner.connect(valleyReverbNode);
+            panner.connect(masterGain);
+            
+            noiseNode.start(time);
+        }
+
+        function initAudioEngine() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(0.7, audioCtx.currentTime);
+
+            lowpassFilter = audioCtx.createBiquadFilter();
+            lowpassFilter.type = "lowpass";
+            lowpassFilter.frequency.setValueAtTime(2000, audioCtx.currentTime);
+
+            masterCompressor = audioCtx.createDynamicsCompressor();
+            masterCompressor.threshold.setValueAtTime(-20, audioCtx.currentTime);
+            masterCompressor.knee.setValueAtTime(14, audioCtx.currentTime);
+            masterCompressor.ratio.setValueAtTime(4, audioCtx.currentTime);
+
+            analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 256;
+
+            // --- VALLEY REVERB MATRIX ---
+            valleyReverbNode = audioCtx.createDelay(1.5);
+            valleyFeedbackGain = audioCtx.createGain();
+            
+            valleyReverbNode.delayTime.setValueAtTime(0.38, audioCtx.currentTime);
+            valleyFeedbackGain.gain.setValueAtTime(0.48, audioCtx.currentTime); 
+            
+            const valleyFilter = audioCtx.createBiquadFilter();
+            valleyFilter.type = "lowpass";
+            valleyFilter.frequency.setValueAtTime(1200, audioCtx.currentTime);
+
+            valleyReverbNode.connect(valleyFilter);
+            valleyFilter.connect(valleyFeedbackGain);
+            valleyFeedbackGain.connect(valleyReverbNode);
+            valleyReverbNode.connect(masterGain); 
+
+            // --- EARTH BASS SYSTEM ---
+            earthBassGain = audioCtx.createGain();
+            earthBassGain.gain.setValueAtTime(0.0, audioCtx.currentTime);
+            
+            earthBassOsc = audioCtx.createOscillator();
+            earthBassOsc.type = "sine";
+            earthBassOsc.frequency.setValueAtTime(keyRoots[activeKey] / 4, audioCtx.currentTime);
+            
+            const earthSubFilter = audioCtx.createBiquadFilter();
+            earthSubFilter.type = "lowpass";
+            earthSubFilter.frequency.setValueAtTime(95, audioCtx.currentTime); 
+
+            earthBassOsc.connect(earthSubFilter);
+            earthSubFilter.connect(earthBassGain);
+            earthBassGain.connect(masterGain);
+            earthBassOsc.start();
+
+            // Formant Filter Bank Setup
+            formantFilterBank = [
+                audioCtx.createBiquadFilter(),
+                audioCtx.createBiquadFilter(),
+                audioCtx.createBiquadFilter()
+            ];
+
+            formantFilterBank.forEach(filter => {
+                filter.type = "peaking";
+                filter.connect(lowpassFilter);
+                filter.connect(valleyReverbNode);
+            });
+
+            // --- THE CRITICAL FIX ---
+            lowpassFilter.connect(masterCompressor);
+            masterGain.connect(masterCompressor); // Fixed: Bridges main landscape hub to output
+            masterCompressor.connect(analyser);
+            analyser.connect(audioCtx.destination);
+
+            statues = [
+                new RelicStatue(0, 0, 0, 0, 0, "ᚠ"),
+                new RelicStatue(1, 0, 0, 0, 0, "ᚢ"),
+                new RelicStatue(2, 0, 0, 0, 0, "ᚦ"),
+                new RelicStatue(3, 0, 0, 0, 0, "ᚨ")
+            ];
+
+            statues.forEach(s => s.initAudio());
+        }
+
+        function updateFilterProfiles() {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            const profile = formants[activeTexture];
+
+            formantFilterBank.forEach((filter, idx) => {
+                filter.frequency.setTargetAtTime(profile[idx].f, now, 0.5);
+                filter.gain.setTargetAtTime(profile[idx].g, now, 0.5);
+                filter.Q.setTargetAtTime(profile[idx].q, now, 0.5);
+            });
+
+            if (activeTexture === "ethereal") {
+                lowpassFilter.frequency.setTargetAtTime(2600, now, 0.5);
+                if (valleyFeedbackGain) valleyFeedbackGain.gain.setTargetAtTime(0.55, now, 0.5); 
+            } else if (activeTexture === "drone") {
+                lowpassFilter.frequency.setTargetAtTime(1100, now, 0.5);
+                if (valleyFeedbackGain) valleyFeedbackGain.gain.setTargetAtTime(0.35, now, 0.5); 
+            } else if (activeTexture === "whisper") {
+                lowpassFilter.frequency.setTargetAtTime(5500, now, 0.5);
+                if (valleyFeedbackGain) valleyFeedbackGain.gain.setTargetAtTime(0.62, now, 0.5); 
+            }
+
+            if(earthBassOsc) {
+                earthBassOsc.frequency.setTargetAtTime(keyRoots[activeKey] / 4, now, 0.8);
+            }
+        }
+
+        function scheduleTreePattern(stepStartTime, sequenceDuration) {
+            const subdivision = sequenceDuration / 4;
+            triggerTreePercussion(stepStartTime, 'snap');
+            triggerTreePercussion(stepStartTime + subdivision * 2, 'rustle');
+
+            if (Math.random() > 0.35) {
+                triggerTreePercussion(stepStartTime + subdivision * 1.5, 'rustle');
+            }
+            if (Math.random() > 0.6) {
+                triggerTreePercussion(stepStartTime + subdivision * 3.2, 'snap');
+            }
+        }
+
+        function advanceSequence() {
+            currentSequenceStep = (currentSequenceStep + 1) % 4;
+            
+            document.querySelectorAll('.step-light').forEach((light, idx) => {
+                light.classList.toggle('active', idx === currentSequenceStep);
+            });
+
+            if (isRelicAwake && statues.length) {
+                const now = audioCtx.currentTime;
+                scheduleTreePattern(now, stepIntervalTime / 1000);
+
+                statues.forEach(s => {
+                    s.pulseAnim = 1.0;
+                    s.triggerVoice(0.6, 0.25);
+                    setTimeout(() => { if (isRelicAwake) s.triggerVoice(1.0, 0.8); }, 250);
+                });
+            }
+        }
+
+        function startClock() {
+            if(sequenceClockTimer) clearInterval(sequenceClockTimer);
+            advanceSequence(); 
+            sequenceClockTimer = setInterval(advanceSequence, stepIntervalTime);
+        }
+
+        function toggleRelic() {
+            if (!isRelicAwake) {
+                if (!audioCtx) initAudioEngine();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                
+                isRelicAwake = true;
+                ignitionBtn.innerText = "Deactivate";
+                ignitionBtn.classList.add('active-relic');
+                monitorText.innerText = "RELIC AWAKE";
+                monitorText.style.color = "var(--neon-amber)";
+
+                updateFilterProfiles();
+                statues.forEach(s => s.triggerVoice(1.0, 0.9));
+                
+                if(earthBassGain) earthBassGain.gain.setTargetAtTime(0.55, audioCtx.currentTime, 1.5);
+                
+                startClock();
+            } else {
+                isRelicAwake = false;
+                ignitionBtn.innerText = "Awaken";
+                ignitionBtn.classList.remove('active-relic');
+                monitorText.innerText = "RELIC OFFLINE";
+                monitorText.style.color = "var(--mystic-teal)";
+
+                if (sequenceClockTimer) clearInterval(sequenceClockTimer);
+                statues.forEach(s => s.triggerVoice(0.0, 0.5));
+                
+                if(earthBassGain) earthBassGain.gain.setTargetAtTime(0.0, audioCtx.currentTime, 0.4);
+                
+                document.querySelectorAll('.step-light').forEach(l => l.classList.remove('active'));
+            }
+        }
+
+        // --- UI Listeners ---
+        document.querySelectorAll('#texture-deck .rune-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('#texture-deck .rune-btn').forEach(b => b.classList.remove('selected'));
+                const target = e.target.closest('.rune-btn');
+                target.classList.add('selected');
+                activeTexture = target.dataset.texture;
+                updateFilterProfiles();
+            });
+        });
+
+        document.querySelectorAll('.gem-deck .gem-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.gem-deck .gem-btn').forEach(b => b.classList.remove('selected'));
+                e.target.classList.add('selected');
+                activeKey = e.target.dataset.key;
+                updateFilterProfiles();
+            });
+        });
+
+        document.querySelectorAll('.control-group .rune-selector-grid').forEach(grid => {
+            const stepIdx = parseInt(grid.dataset.step);
+            grid.querySelectorAll('.rune-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    grid.querySelectorAll('.rune-btn').forEach(b => b.classList.remove('selected'));
+                    e.target.classList.add('selected');
+                    userSequence[stepIdx] = parseInt(e.target.dataset.val);
+                });
+            });
+        });
+
+        document.querySelectorAll('#tempo-deck .rune-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('#tempo-deck .rune-btn').forEach(b => b.classList.remove('selected'));
+                e.target.classList.add('selected');
+                stepIntervalTime = parseInt(e.target.dataset.ms);
+                if (isRelicAwake) startClock();
+            });
+        });
+
+        ignitionBtn.addEventListener('click', toggleRelic);
+
+        // --- Visualizer ---
+        const dataArray = new Uint8Array(128);
+
+        function draw(timestamp) {
+            requestAnimationFrame(draw);
+            
+            const timeSeconds = timestamp / 1000;
+            ctx.fillStyle = 'rgba(22, 19, 16, 0.22)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (analyser && isRelicAwake) {
+                analyser.getByteFrequencyData(dataArray);
+            }
+
+            const totalStatues = 4;
+            const segmentWidth = canvas.width / totalStatues;
+
+            for (let i = 0; i < totalStatues; i++) {
+                let statue = statues[i];
+                if (!statue) continue;
+
+                if (isRelicAwake) {
+                    statue.updateAudioDynamics(timeSeconds);
+                }
+
+                statue.width = 50;
+                statue.height = 180;
+                statue.x = (segmentWidth * i) + (segmentWidth / 2) - (statue.width / 2);
+                statue.y = canvas.height / 2 - (statue.height / 2);
+
+                if (statue.pulseAnim > 0) statue.pulseAnim -= 0.04;
+
+                let audioIndex = Math.floor(i * 6) + 2;
+                let audioModifier = isRelicAwake ? (dataArray[audioIndex] / 255) * 45 : 0;
+                
+                ctx.strokeStyle = i === currentSequenceStep ? 'var(--neon-amber)' : 'var(--border-bronze)';
+                ctx.lineWidth = i === currentSequenceStep ? 3 : 1;
+                ctx.strokeRect(statue.x, statue.y - audioModifier/2, statue.width, statue.height + audioModifier);
+
+                if (isRelicAwake) {
+                    let grad = ctx.createLinearGradient(0, statue.y, 0, statue.y + statue.height);
+                    grad.addColorStop(0, 'rgba(78, 168, 222, 0.1)');
+                    grad.addColorStop(0.5, i === currentSequenceStep ? 'rgba(224, 122, 95, 0.4)' : 'rgba(78, 168, 222, 0.2)');
+                    grad.addColorStop(1, 'rgba(22, 19, 16, 0.1)');
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(statue.x + 4, statue.y - audioModifier/2 + 4, statue.width - 8, statue.height + audioModifier - 8);
+                }
+
+                ctx.font = "24px 'Cinzel Decorative'";
+                ctx.fillStyle = i === currentSequenceStep ? 'var(--neon-amber)' : 'var(--text-gold)';
+                if(statue.pulseAnim > 0) {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${statue.pulseAnim})`;
+                }
+                ctx.textAlign = "center";
+                ctx.fillText(statue.runeChar, statue.x + statue.width / 2, canvas.height / 2 + 8);
+            }
+
+            if (isRelicAwake) {
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(78, 168, 222, 0.35)';
+                let sliceWidth = canvas.width / 64;
+                let lx = 0;
+                for (let j = 0; j < 64; j++) {
+                    let v = dataArray[j] / 128.0;
+                    let ly = canvas.height - 40 - (v * 20);
+                    if (j === 0) ctx.moveTo(lx, ly); else ctx.lineTo(lx, ly);
+                    lx += sliceWidth;
+                }
+                ctx.stroke();
+            }
+        }
+
+        requestAnimationFrame(draw);
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Granular Galaxy</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #020205;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #e0e0e9;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .interactive {
+            pointer-events: auto;
+        }
+
+        header {
+            background: linear-gradient(to bottom, rgba(5,5,10,0.8), rgba(5,5,10,0));
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        h1 {
+            margin: 0 0 5px 0;
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #8ab4f8;
+            text-shadow: 0 0 10px rgba(138, 180, 248, 0.5);
+        }
+
+        p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #9aa0a6;
+        }
+
+        /* --- Navigation Back Button --- */
+        .btn-back {
+            position: absolute;
+            left: 20px;
+            top: 100px;
+            background: rgba(10, 10, 20, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #8ab4f8;
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-back:hover {
+            background: rgba(138, 180, 248, 0.15);
+            border-color: #8ab4f8;
+            transform: translateX(-2px);
+        }
+
+        /* --- Presets Sidebar Panel --- */
+        #presets-panel {
+            position: absolute;
+            left: 20px;
+            top: 150px;
+            background: rgba(10, 10, 20, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .preset-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8ab4f8;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .preset-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #e0e0e9;
+            padding: 10px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .preset-btn:hover {
+            background: rgba(138, 180, 248, 0.15);
+            border-color: #8ab4f8;
+        }
+
+        .preset-btn.active {
+            background: rgba(138, 180, 248, 0.25);
+            border-color: #8ab4f8;
+            box-shadow: 0 0 8px rgba(138, 180, 248, 0.3);
+        }
+
+        .preset-btn.loading {
+            opacity: 0.6;
+            cursor: wait;
+            background: repeating-linear-gradient(45deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px);
+        }
+
+        .preset-meta {
+            font-size: 0.65rem;
+            color: #9aa0a6;
+        }
+
+        #drop-zone {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 340px;
+            height: 220px;
+            border: 2px dashed #3c4043;
+            border-radius: 12px;
+            background: rgba(10, 10, 20, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #drop-zone.hover {
+            border-color: #8ab4f8;
+            background: rgba(20, 30, 50, 0.9);
+            box-shadow: 0 0 20px rgba(138, 180, 248, 0.3);
+        }
+        #drop-zone svg {
+            width: 44px;
+            height: 44px;
+            fill: #8ab4f8;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .btn-browse {
+            background: #2b3e66;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+        .btn-browse:hover {
+            background: #3b568c;
+        }
+        #file-input {
+            display: none;
+        }
+        #controls-panel {
+            background: rgba(10, 10, 20, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+            transform: translateY(150%);
+            transition: transform 0.5s cubic-bezier(0.1, 1, 0.1, 1);
+        }
+        #controls-panel.visible {
+            transform: translateY(0);
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #9aa0a6;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            background: #202124;
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #8ab4f8;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(138, 180, 248, 0.8);
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        #status-text {
+            font-size: 0.8rem;
+            color: #ff8a8a;
+            font-family: monospace;
+            margin-top: 10px;
+        }
+        #instructions {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: rgba(10,10,20,0.5);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            border-left: 3px solid #8ab4f8;
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+
+<body>
+    <div id="canvas-container"></div>
+
+    <div id="ui-overlay">
+        <header class="interactive">
+            <h1>Granular Galaxy</h1>
+            <p id="file-info">Shatter music into stars</p>
+        </header>
+
+        <!-- Presets Selection Side-Matrix -->
+        <div id="presets-panel" class="interactive">
+            <div class="preset-title">Preset Tracks</div>
+            <button class="preset-btn" onclick="loadPresetTrack(0, 'world-between.mp3', 'Worlds Between')">
+                <span>Worlds Between</span>
+                <span class="preset-meta" id="meta-0">Click to play</span>
+            </button>
+            <button class="preset-btn" onclick="loadPresetTrack(1, 'Best Day Yet.mp3', 'Best Day Yet')">
+                <span>Best Day Yet</span>
+                <span class="preset-meta" id="meta-1">Click to play</span>
+            </button>
+            <button class="preset-btn" onclick="loadPresetTrack(2, 'Blue Skies - Accidentals.mp3', 'Blue Skies')">
+                <span>Blue Skies</span>
+                <span class="preset-meta" id="meta-2">Click to play</span>
+            </button>
+            <button class="preset-btn" onclick="loadPresetTrack(3, 'just more time.mp3', 'Just More Time')">
+                <span>Just More Time</span>
+                <span class="preset-meta" id="meta-3">Click to play</span>
+            </button>
+            <button class="preset-btn" onclick="loadPresetTrack(4, 'menu_music.mp3', 'TKart Menu Music')">
+                <span>TKart Menu Music</span>
+                <span class="preset-meta" id="meta-4">Click to play</span>
+            </button>
+        </div>
+
+        <div id="instructions">
+            WASD: Move Listener<br>
+            Arrow Keys: Orbit View Camera<br>
+            Left-Click + Drag: Orbit View Mouse<br>
+            Scroll: Zoom
+        </div>
+
+        <div id="drop-zone" class="interactive">
+            <svg viewBox="0 0 24 24">
+                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+            </svg>
+            <p style="color: #fff; font-weight: 500; margin-bottom: 2px;">Drop an audio file here</p>
+            <p style="font-size: 0.75rem; color: #9aa0a6;">WAV, MP3, or OGG</p>
+            <button class="btn-browse" onclick="document.getElementById('file-input').click()">Or Choose File</button>
+            <input type="file" id="file-input" accept="audio/*">
+            <p id="status-text"></p>
+        </div>
+
+        <div id="controls-panel" class="interactive">
+            <div class="control-group">
+                <label for="grain-size">Grain Size (<span id="val-size">300</span>ms)</label>
+                <input type="range" id="grain-size" min="20" max="600" value="300">
+            </div>
+            <div class="control-group">
+                <label for="grain-density">Density (<span id="val-density">5</span>/sec)</label>
+                <input type="range" id="grain-density" min="5" max="60" value="5">
+            </div>
+            <div class="control-group">
+                <label for="spray">Spatial Spread</label>
+                <input type="range" id="spray" min="10" max="100" value="40">
+            </div>
+            <div class="control-group">
+                <label for="rotation-speed">Galaxy Spin</label>
+                <input type="range" id="rotation-speed" min="-20" max="20" value="3">
+            </div>
+            <div class="control-group">
+                <label for="master-gain">Master Volume</label>
+                <input type="range" id="master-gain" min="0" max="100" value="75">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        //System State
+        let audioCtx = null;
+        let audioBuffer = null;
+        let masterGainNode = null;
+        let pannerNode = null;
+        let granuleData = [];
+        let isPlaying = false;
+        let nextGrainTime = 0;
+        let globalRotationAngle = 0; 
+        
+        // --- Keyboard State & Movement Variables ---
+        const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
+        const velocity = new THREE.Vector3();
+        const moveSpeed = 35.0;       
+        const friction = 0.12;        
+        const lookSpeed = 2.0;        
+
+         // Parameters for controlling the granulator 
+        const params = {
+            grainSize: 0.5, 
+            density: 20,     
+            spray: 40,       
+            volume: 0.8,
+            rotation: 0.005
+        };
+
+        // UI elements
+        const dropZone = document.getElementById('drop-zone');
+        const statusText = document.getElementById('status-text');
+        const controlsPanel = document.getElementById('controls-panel');
+        const fileInfo = document.getElementById('file-info');
+        const fileInput = document.getElementById('file-input');
+
+        // --- Sync HTML Sliders with Default Params on Load ---
+        function initSliderDefaults() {
+            document.getElementById('grain-size').value = params.grainSize * 1000;
+            document.getElementById('val-size').innerText = params.grainSize * 1000;
+        
+            document.getElementById('grain-density').value = params.density;
+            document.getElementById('val-density').innerText = params.density;
+        
+            document.getElementById('spray').value = params.spray;
+            document.getElementById('rotation-speed').value = params.rotation / 0.001;
+            document.getElementById('master-gain').value = params.volume * 100;
+        }
+        initSliderDefaults();
+
+        // Hooking up the UI sliders
+        document.getElementById('grain-size').addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            document.getElementById('val-size').innerText = val;
+            params.grainSize = val / 1000.0;
+        });
+
+        document.getElementById('grain-density').addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            document.getElementById('val-density').innerText = val;
+            params.density = val;
+        });
+
+        document.getElementById('spray').addEventListener('input', (e) => {
+            params.spray = parseInt(e.target.value);
+        });
+
+        document.getElementById('rotation-speed').addEventListener('input', (e) => {
+            params.rotation = parseInt(e.target.value) * 0.001;
+        });
+
+        document.getElementById('master-gain').addEventListener('input', (e) => {
+            params.volume = parseInt(e.target.value) / 100.0;
+            if (masterGainNode && audioCtx) {
+                masterGainNode.gain.setValueAtTime(params.volume, audioCtx.currentTime);
+            }
+        });
+
+        //Three.js Setup
+        const container = document.getElementById('canvas-container'); 
+        const scene = new THREE.Scene(); 
+
+        // camera setup
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.set(0, 35, 60);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 - 0.01; 
+
+        const listenerGeometry = new THREE.SphereGeometry(1.0, 16, 16); 
+        const listenerMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffcc, wireframe: true, transparent: true, opacity: 0.6 });
+        const listenerMesh = new THREE.Mesh(listenerGeometry, listenerMaterial);
+        scene.add(listenerMesh);
+
+        // --- Create Distant Background Starfield ---
+        function generateBackgroundStars() {
+            const starCount = 1500;
+            const geom = new THREE.BufferGeometry();
+            const positions = new Float32Array(starCount * 3);
+
+            for (let i = 0; i < starCount; i++) {
+                const u = Math.random();
+                const v = Math.random();
+                const theta = u * 2.0 * Math.PI;
+                const phi = Math.acos(2.0 * v - 1.0);
+                const radius = 600 + Math.random() * 400; 
+
+                positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = radius * Math.cos(phi);
+            }
+
+            geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            const mat = new THREE.PointsMaterial({
+                size: 1.5,
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.6,
+                sizeAttenuation: true
+            });
+
+            const bgStars = new THREE.Points(geom, mat);
+            scene.add(bgStars);
+        }
+        generateBackgroundStars();
+
+        // --- Keyboard Event Listeners ---
+        window.addEventListener('keydown', (e) => {
+            if (e.key in keys) keys[e.key] = true;
+            const lowerKey = e.key.toLowerCase();
+            if (lowerKey in keys) keys[lowerKey] = true;
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.key in keys) keys[e.key] = false;
+            const lowerKey = e.key.toLowerCase();
+            if (lowerKey in keys) keys[lowerKey] = false;
+        });
+
+        // --- Explicit Audio Activation Routine ---
+        async function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
+            if (!masterGainNode) {
+                setupAudioGraph();
+            }
+        }
+
+        function setupAudioGraph() {
+            masterGainNode = audioCtx.createGain();
+            masterGainNode.gain.setValueAtTime(params.volume, audioCtx.currentTime);
+
+            pannerNode = audioCtx.createPanner();
+            pannerNode.panningModel = 'HRTF';
+            pannerNode.distanceModel = 'exponential';
+            pannerNode.refDistance = 2;
+            pannerNode.maxDistance = 100;
+            pannerNode.rolloffFactor = 1.2;
+
+            pannerNode.connect(masterGainNode);
+            masterGainNode.connect(audioCtx.destination);
+        }
+
+        // --- Async Preset Track Loader ---
+        async function loadPresetTrack(index, url, trackName) {
+            await initAudioContext();
+
+            // UI feedback management
+            const buttons = document.querySelectorAll('.preset-btn');
+            buttons.forEach(btn => btn.classList.remove('active', 'loading'));
+            
+            const activeBtn = buttons[index];
+            activeBtn.classList.add('loading');
+            
+            const metaElements = document.querySelectorAll('.preset-meta');
+            metaElements.forEach((el, idx) => el.innerText = idx === index ? 'Loading track' : 'Click to play');
+
+            fileInfo.innerText = `Loading preset: ${trackName}...`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP status code failure: ${response.status}`);
+                const arrayBuffer = await response.arrayBuffer();
+                
+                audioCtx.decodeAudioData(arrayBuffer, function(buffer) {
+                    audioBuffer = buffer;
+                    generateGranularCloud();
+                    
+                    dropZone.style.display = 'none';
+                    controlsPanel.classList.add('visible');
+                    document.getElementById('instructions').style.display = 'block';
+                    
+                    activeBtn.classList.remove('loading');
+                    activeBtn.classList.add('active');
+                    document.getElementById(`meta-${index}`).innerText = 'Playing';
+                    fileInfo.innerText = `${trackName}`;
+
+                    if (!isPlaying) {
+                        isPlaying = true;
+                        nextGrainTime = audioCtx.currentTime;
+                        scheduler();
+                    }
+                }, function(err) {
+                    activeBtn.classList.remove('loading');
+                    document.getElementById(`meta-${index}`).innerText = 'Decode failed';
+                    fileInfo.innerText = "Error parsing file format.";
+                    console.error(err);
+                });
+
+            } catch (error) {
+                activeBtn.classList.remove('loading');
+                document.getElementById(`meta-${index}`).innerText = 'File missing';
+                fileInfo.innerText = "Could not find file in content/";
+                console.error("Preset asset fetch error: ", error);
+            }
+        }
+
+        // --- Drag & Drop Hooks ---
+        window.addEventListener('dragover', (e) => e.preventDefault(), false);
+        window.addEventListener('drop', (e) => e.preventDefault(), false);
+
+        dropZone.addEventListener('dragenter', (e) => { e.preventDefault(); dropZone.classList.add('hover'); }, false);
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('hover'); }, false);
+        dropZone.addEventListener('dragleave', () => dropZone.classList.remove('hover'), false);
+        
+        dropZone.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('hover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                statusText.style.color = "#8ab4f8";
+                statusText.innerText = "Activating Audio engine...";
+                await initAudioContext();
+                processFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            const files = e.target.files;
+            if (files.length > 0) {
+                statusText.style.color = "#8ab4f8";
+                statusText.innerText = "Activating Audio engine...";
+                await initAudioContext();
+                processFile(files[0]);
+            }
+        });
+
+        function processFile(file) {
+            statusText.innerText = "Parsing audio array...";
+            fileInfo.innerText = `${file.name}`;
+            
+            // Clear active state highlights from sidebar elements
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.preset-meta').forEach(el => el.innerText = 'Click to play');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                audioCtx.decodeAudioData(e.target.result, function(buffer) {
+                    audioBuffer = buffer;
+                    generateGranularCloud();
+                    
+                    dropZone.style.display = 'none';
+                    controlsPanel.classList.add('visible');
+                    document.getElementById('instructions').style.display = 'block';
+                    
+                    if (!isPlaying) {
+                        isPlaying = true;
+                        nextGrainTime = audioCtx.currentTime;
+                        scheduler();
+                    }
+                }, function(err) {
+                    statusText.style.color = "#ff8a8a";
+                    statusText.innerText = "Decode failed. Use a standard WAV/MP3.";
+                    console.error(err);
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // --- Cloud Generation ---
+        let particleSystem = null;
+
+        function generateGranularCloud() {
+            if (particleSystem) scene.remove(particleSystem);
+            granuleData = [];
+
+            const totalGrains = 550; 
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(totalGrains * 3);
+            const colors = new Float32Array(totalGrains * 3);
+
+            const duration = audioBuffer.duration;
+            const colorObj = new THREE.Color();
+
+            for (let i = 0; i < totalGrains; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const radius = 12 + Math.random() * 60; 
+                const x = Math.cos(angle) * radius;
+                const z = Math.sin(angle) * radius;
+                const y = (Math.random() - 0.5) * 6;
+
+                positions[i * 3] = x;
+                positions[i * 3 + 1] = y;
+                positions[i * 3 + 2] = z;
+
+                const ratio = i / totalGrains;
+                const sampleOffset = ratio * duration; 
+                
+                colorObj.setHSL(0.05 + (ratio * 0.6), 0.9, 0.55);
+                colors[i * 3] = colorObj.r;
+                colors[i * 3 + 1] = colorObj.g;
+                colors[i * 3 + 2] = colorObj.b;
+
+                granuleData.push({
+                    x: x, y: y, z: z,
+                    sampleOffset: sampleOffset,
+                    color: colorObj.clone(),
+                    phaseOffset: Math.random() * Math.PI * 2
+                });
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const pTexture = createCircleTexture();
+            
+            const material = new THREE.PointsMaterial({
+                size: 2.2,
+                map: pTexture,
+                vertexColors: true,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthTest: true,       
+                depthWrite: false      
+            });
+
+            // Shader injection
+            material.onBeforeCompile = function (shader) {
+                shader.uniforms.uTime = { value: 0 };
+                shader.uniforms.uRotation = { value: 0 };
+                material.userData.shader = shader;
+
+                shader.vertexShader = `
+                    uniform float uTime;
+                    uniform float uRotation;
+                    ${shader.vertexShader}
+                `;
+                
+                shader.vertexShader = shader.vertexShader.replace(
+                    '#include <begin_vertex>',
+                    `
+                    float cosR = cos(uRotation);
+                    float sinR = sin(uRotation);
+                    vec3 transformed = vec3(
+                        position.x * cosR - position.z * sinR,
+                        position.y,
+                        position.x * sinR + position.z * cosR
+                    );
+                    `
+                );
+
+                shader.vertexShader = shader.vertexShader.replace(
+                    '#include <glsl_vertex>',
+                    `
+                    #include <glsl_vertex>
+                    float phase = (position.x * 0.15) + (position.z * 0.15);
+                    float shimmer = 0.72 + sin(uTime * 4.5 + phase) * 0.28;
+                    gl_PointSize *= shimmer;
+                    `
+                );
+            };
+
+            particleSystem = new THREE.Points(geometry, material);
+            scene.add(particleSystem);
+        }
+
+        function createCircleTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 64; canvas.height = 64; 
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            gradient.addColorStop(0, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.1, 'rgba(255,255,255,1)');
+            gradient.addColorStop(0.3, 'rgba(140,180,255,0.7)');
+            gradient.addColorStop(0.6, 'rgba(60,110,255,0.2)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 64, 64);
+            const texture = new THREE.Texture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
+        // --- Processing Engine ---
+        function scheduler() {
+            if (!isPlaying) return;
+            while (nextGrainTime < audioCtx.currentTime + 0.08) {
+                spawnGrain(nextGrainTime);
+                nextGrainTime += (1.0 / params.density);
+            }
+            setTimeout(scheduler, 20);
+        }
+
+        // Weight mapping algorithm & coordinate translation setup
+        function spawnGrain(time) {
+            if (!audioBuffer || !particleSystem) return;
+
+            const targetPos = controls.target;
+            let weights = [];
+            let totalWeight = 0;
+
+            const rangeLimit = params.spray; 
+            const rangeLimitSq = rangeLimit * rangeLimit;
+
+            const cosR = Math.cos(-globalRotationAngle);
+            const sinR = Math.sin(-globalRotationAngle);
+            
+            const localTargetX = targetPos.x * cosR - targetPos.z * sinR;
+            const localTargetZ = targetPos.x * sinR + targetPos.z * cosR;
+
+            for (let i = 0; i < granuleData.length; i++) {
+                const gd = granuleData[i];
+                
+                const dx = gd.x - localTargetX;
+                const dy = gd.y - targetPos.y;
+                const dz = gd.z - localTargetZ;
+                const distSq = dx*dx + dy*dy + dz*dz;
+
+                if (distSq < rangeLimitSq) {
+                    const dist = Math.sqrt(distSq);
+                    const weight = Math.pow(1 - (dist / rangeLimit), 2);
+                    weights.push({ index: i, weight: weight, rx: gd.x, ry: gd.y, rz: gd.z });
+                    totalWeight += weight;
+                }
+            }
+
+            if (weights.length === 0 || totalWeight === 0) return;
+
+            let rand = Math.random() * totalWeight;
+            let selectedNode = 0;
+            for (let i = 0; i < weights.length; i++) {
+                rand -= weights[i].weight;
+                if (rand <= 0) {
+                    selectedNode = i;
+                    break;
+                }
+            }
+
+            const chosen = weights[selectedNode];
+
+            const source = audioCtx.createBufferSource();
+            source.buffer = audioBuffer;
+
+            const sizeOffset = (Math.random() - 0.5) * 0.02;
+            const currentDuration = Math.max(0.01, params.grainSize + sizeOffset);
+            
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0.0, time);
+            gainNode.gain.linearRampToValueAtTime(0.5, time + (currentDuration * 0.15)); 
+            gainNode.gain.setValueAtTime(0.5, time + (currentDuration * 0.8));
+            gainNode.gain.linearRampToValueAtTime(0.0, time + currentDuration);         
+
+            const individualPanner = audioCtx.createPanner();
+            individualPanner.panningModel = 'HRTF';
+            
+            individualPanner.setPosition(chosen.rx, chosen.ry, chosen.rz);
+
+            source.connect(gainNode);
+            gainNode.connect(individualPanner);
+            individualPanner.connect(masterGainNode);
+
+            const grainMeta = granuleData[chosen.index];
+            const playbackOffset = Math.min(audioBuffer.duration - currentDuration, Math.max(0, grainMeta.sampleOffset + (Math.random() - 0.5) * 0.05));
+            source.start(time, playbackOffset, currentDuration);
+            source.stop(time + currentDuration + 0.02);
+            
+            triggerVisualPulse(chosen.index);
+        }
+
+        function triggerVisualPulse(index) {
+            if (!particleSystem) return;
+            const colorAttribute = particleSystem.geometry.attributes.color;
+            const origColor = granuleData[index].color;
+            
+            colorAttribute.setXYZ(index, 2.5, 2.5, 2.5); 
+            colorAttribute.needsUpdate = true;
+
+            setTimeout(() => {
+                if (!particleSystem) return;
+                colorAttribute.setXYZ(index, origColor.r, origColor.g, origColor.b);
+                colorAttribute.needsUpdate = true;
+            }, params.grainSize * 1000);
+        }
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const deltaTime = Math.min(clock.getDelta(), 0.1); 
+
+            // --- 1. Camera View Control via Arrow Keys ---
+            if (keys.ArrowLeft || keys.ArrowRight || keys.ArrowUp || keys.ArrowDown) {
+                const camOffset = new THREE.Vector3().subVectors(camera.position, controls.target);
+                
+                if (keys.ArrowLeft) camOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), lookSpeed * deltaTime);
+                if (keys.ArrowRight) camOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), -lookSpeed * deltaTime);
+                
+                if (keys.ArrowUp || keys.ArrowDown) {
+                    const sideVector = new THREE.Vector3().crossVectors(camOffset, camera.up).normalize();
+                    const angleDelta = lookSpeed * deltaTime;
+                    
+                    if (keys.ArrowUp) camOffset.applyAxisAngle(sideVector, angleDelta);
+                    if (keys.ArrowDown) camOffset.applyAxisAngle(sideVector, -angleDelta);
+                }
+                
+                camera.position.copy(controls.target).add(camOffset);
+            }
+
+            // --- 2. Relative Movement Calculations (WASD only) ---
+            const forward = new THREE.Vector3();
+            camera.getWorldDirection(forward);
+            forward.y = 0; 
+            forward.normalize();
+
+            const right = new THREE.Vector3();
+            right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize(); 
+
+            const moveDirection = new THREE.Vector3();
+            if (keys.w) moveDirection.add(forward);
+            if (keys.s) moveDirection.sub(forward);
+            if (keys.d) moveDirection.add(right);
+            if (keys.a) moveDirection.sub(right);
+            moveDirection.normalize();
+
+            // --- 3. Velocity and Translation Processing ---
+            const targetVelocity = moveDirection.multiplyScalar(moveSpeed);
+            velocity.lerp(targetVelocity, friction);
+
+            const frameMovement = velocity.clone().multiplyScalar(deltaTime);
+            controls.target.add(frameMovement);
+            camera.position.add(frameMovement);
+
+            controls.target.y = 0;
+            controls.update();
+
+            // --- 4. Synchronize Audio Listener ---
+            if (audioCtx && pannerNode) {
+                const target = controls.target;
+                listenerMesh.position.copy(target);
+                
+                globalRotationAngle += params.rotation;
+
+                const cosInv = Math.cos(-globalRotationAngle);
+                const sinInv = Math.sin(-globalRotationAngle);
+                
+                const relativeAudioX = target.x * cosInv - target.z * sinInv;
+                const relativeAudioZ = target.x * sinInv + target.z * cosInv;
+
+                audioCtx.listener.setPosition(relativeAudioX, target.y, relativeAudioZ);
+                
+                const dir = new THREE.Vector3();
+                camera.getWorldDirection(dir);
+                
+                const orientedX = dir.x * cosInv - dir.z * sinInv;
+                const orientedZ = dir.x * sinInv + dir.z * cosInv;
+                
+                audioCtx.listener.setOrientation(orientedX, dir.y, orientedZ, 0, 1, 0);
+            }
+
+            // --- 5. GPU Shimmer/Spin Updates ---
+            if (particleSystem) {
+                const elapsedTime = clock.getElapsedTime();
+
+                if (particleSystem.material.userData.shader) {
+                    particleSystem.material.userData.shader.uniforms.uTime.value = elapsedTime;
+                    particleSystem.material.userData.shader.uniforms.uRotation.value = globalRotationAngle;
+                }
+
+                const globalPulse = 1.05 + Math.sin(elapsedTime * 0.8) * 0.1; 
+                particleSystem.material.size = 2.2 * globalPulse;
+                particleSystem.material.opacity = 0.82 + Math.sin(elapsedTime * 0.8) * 0.08;
+            }
+
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
