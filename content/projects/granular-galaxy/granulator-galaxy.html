@@ -10,7 +10,6 @@
             box-sizing: border-box;
             user-select: none;
         }
-
         body, html {
             margin: 0;
             padding: 0;
@@ -21,7 +20,6 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             color: #e0e0e9;
         }
-
         #canvas-container {
             position: absolute;
             top: 0;
@@ -30,7 +28,6 @@
             height: 100%;
             z-index: 1;
         }
-
         #ui-overlay {
             position: absolute;
             top: 0;
@@ -43,12 +40,11 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 20px;
+            overflow-y: auto; /* Allows overlay UI to scroll if it overflows on mobile */
         }
-
         .interactive {
             pointer-events: auto;
         }
-
         header {
             background: linear-gradient(to bottom, rgba(5,5,10,0.85), rgba(5,5,10,0));
             padding: 15px;
@@ -57,6 +53,7 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
+            flex-shrink: 0;
         }
 
         .header-left {
@@ -162,7 +159,7 @@
             cursor: wait;
         }
 
-        /* --- Central Gateway Frame (Holds Upload & Grid Presets) --- */
+        /* --- Central Gateway Frame --- */
         #gateway-container {
             position: absolute;
             top: 50%;
@@ -171,7 +168,8 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            width: 380px;
+            width: 90%;
+            max-width: 380px;
             z-index: 15;
         }
 
@@ -189,6 +187,7 @@
             transition: all 0.3s ease;
             text-align: center;
             padding: 20px;
+            flex-shrink: 0; /* Prevents squishing on short viewports */
         }
 
         #drop-zone.hover {
@@ -241,6 +240,7 @@
             flex-direction: column;
             gap: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            flex-shrink: 0; /* Prevents squishing on short viewports */
         }
 
         .preset-title {
@@ -298,13 +298,14 @@
             padding: 20px;
             width: 100%;
             max-width: 1000px;
-            margin: 0 auto;
+            margin: 20px auto 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 20px;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
             transform: translateY(150%);
             transition: transform 0.5s cubic-bezier(0.1, 1, 0.1, 1);
+            flex-shrink: 0;
         }
 
         #controls-panel.visible {
@@ -349,6 +350,34 @@
             transform: scale(1.2);
         }
 
+        /* --- Mobile Optimization for Controls --- */
+        @media (max-width: 600px) {
+            #controls-panel {
+                grid-template-columns: repeat(2, 1fr); /* Two columns instead of wide blocks */
+                gap: 12px;
+                padding: 12px;
+                border-radius: 12px 12px 0 0; /* Align cleanly with the bottom edge */
+            }
+
+            .control-group {
+                gap: 4px; /* Tighten internal spacing */
+            }
+
+            label {
+                font-size: 0.65rem; /* Make labels smaller and neat */
+                letter-spacing: 0.5px;
+            }
+
+            input[type="range"] {
+                height: 4px; /* Slimmer slider track */
+            }
+
+            input[type="range"]::-webkit-slider-thumb {
+                width: 12px; /* Smaller touch point */
+                height: 12px;
+            }
+        }
+
         #status-text {
             font-size: 0.8rem;
             color: #ff8a8a;
@@ -366,6 +395,45 @@
             font-size: 0.8rem;
             border-left: 3px solid #8ab4f8;
             display: none;
+        }
+
+        /* --- Media Queries for Mobile Screens --- */
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            #drop-zone {
+                height: 160px;
+                padding: 15px;
+            }
+        }
+
+        /* Handles short screens & landscape orientations where vertical space is scarce */
+        @media (max-height: 650px) {
+            #ui-overlay {
+                pointer-events: auto; /* Allow whole container to handle scrolling */
+                display: block;      /* Fallback to block layout so items flow naturally instead of being pinned */
+                overflow-y: scroll;
+                -webkit-overflow-scrolling: touch;
+            }
+            header {
+                position: relative;
+                margin-bottom: 20px;
+            }
+            #gateway-container {
+                position: relative;
+                top: 0;
+                left: 0;
+                transform: none;
+                margin: 0 auto 30px auto;
+                width: 100%;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
