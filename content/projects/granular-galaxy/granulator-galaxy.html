@@ -443,6 +443,14 @@
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 </head>
 
 <body>
@@ -551,12 +559,23 @@
         let globalRotationAngle = 0; 
         
         // --- Keyboard State & Movement Variables ---
-        const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
+        const keys = { 
+            w: false, a: false, s: false, d: false, 
+            ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false,
+            '+': false, '-': false, '=': false // Key trackers for zoom mechanics
+        };
         const velocity = new THREE.Vector3();
         const moveSpeed = 35.0;       
         const friction = 0.12;        
-        const lookSpeed = 2.0;        
+        const lookSpeed = 0.5;        
 
+        // --- Zoom Boundary Constants ---
+        const MIN_ZOOM_DISTANCE = 8.0;    // Focused close up on the holographic listener core
+        const MAX_ZOOM_DISTANCE = 1800.0;  // Macro perspective to take in the wider galaxy grid
+        const ZOOM_SPEED = 0.2;           // Speed coefficient of structural distance transition
+
+        const max_distance = 1000;
+        const min_distance = 600;
          // Parameters for controlling the granulator 
         const params = {
             grainSize: 0.5, 
@@ -631,19 +650,68 @@
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); 
         container.appendChild(renderer.domElement);
 
+        // --- Post-Processing Setup (Bloom Pipeline) ---
+        const renderScene = new THREE.RenderPass(scene, camera);
+
+        const bloomPass = new THREE.UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight),
+            1.6,  // Bloom strength
+            0.4,  // Radius
+            0.15  // Threshold
+        );
+
+        const composer = new THREE.EffectComposer(renderer);
+        composer.addPass(renderScene);
+        composer.addPass(bloomPass);
+
+        // Ensure post-processing canvas matches viewport updates
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            composer.setSize(window.innerWidth, window.innerHeight);
+        });
+
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
         controls.maxPolarAngle = Math.PI / 2 - 0.01; 
 
-        const listenerGeometry = new THREE.SphereGeometry(1.0, 16, 16); 
-        const listenerMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffcc, wireframe: true, transparent: true, opacity: 0.6 });
-        const listenerMesh = new THREE.Mesh(listenerGeometry, listenerMaterial);
-        scene.add(listenerMesh);
+        // --- Upgraded Holographic Energy Core Listener ---
+        const listenerGroup = new THREE.Group();
+        scene.add(listenerGroup);
+
+        // Core Inner Sphere (Bright emissive core)
+        const coreGeo = new THREE.SphereGeometry(0.6, 32, 32);
+        const coreMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+        listenerGroup.add(coreMesh);
+
+        // Mid Shield (Geometric Wireframe Matrix)
+        const midGeo = new THREE.IcosahedronGeometry(1.2, 2);
+        const midMat = new THREE.MeshBasicMaterial({
+            color: 0x00ffcc,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.45
+        });
+        const midMesh = new THREE.Mesh(midGeo, midMat);
+        listenerGroup.add(midMesh);
+
+        // Outer Resonance Rings
+        const ringGeo = new THREE.RingGeometry(1.6, 1.65, 64);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00ffcc, side: THREE.DoubleSide, transparent: true, opacity: 0.7 });
+        const ringMesh1 = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh1.rotation.x = Math.PI / 2;
+        listenerGroup.add(ringMesh1);
+
+        const ringMesh2 = ringMesh1.clone();
+        ringMesh2.rotation.y = Math.PI / 2;
+        listenerGroup.add(ringMesh2);
 
         // --- Create Distant Background Starfield ---
         function generateBackgroundStars() {
-            const starCount = 15000;
+            const starCount = 30000;
             const geom = new THREE.BufferGeometry();
             const positions = new Float32Array(starCount * 3);
 
@@ -652,7 +720,7 @@
                 const v = Math.random();
                 const theta = u * 2.0 * Math.PI;
                 const phi = Math.acos(2.0 * v - 1.0);
-                const radius = 600 + Math.random() * 400; 
+                const radius = min_distance + Math.random() * (max_distance - min_distance); 
 
                 positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
                 positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
@@ -726,9 +794,7 @@
 
         // --- Async Preset Track Loader ---
         async function loadPresetTrack(index, url, trackName) {
-            // Reflect structural selection down inside the header selector element mapping
             headerSelect.value = url;
-            
             const buttons = document.querySelectorAll('.preset-btn');
             buttons.forEach(btn => btn.classList.remove('loading'));
             
@@ -754,7 +820,6 @@
                     audioBuffer = buffer;
                     generateGranularCloud();
                     
-                    // Hide main landing view, present header quick-swap dropdown
                     gatewayContainer.style.display = 'none';
                     headerPresets.classList.add('visible');
                     
@@ -815,7 +880,7 @@
         function processFile(file) {
             statusText.innerText = "Parsing audio array...";
             fileInfo.innerText = `${file.name}`;
-            headerSelect.value = ""; // Reset fallback picker
+            headerSelect.value = ""; 
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -846,11 +911,12 @@
         // --- Cloud Generation ---
         let particleSystem = null;
 
+
         function generateGranularCloud() {
             if (particleSystem) scene.remove(particleSystem);
             granuleData = [];
 
-            const totalGrains = 550; 
+            const totalGrains = 1000; 
             const geometry = new THREE.BufferGeometry();
             const positions = new Float32Array(totalGrains * 3);
             const colors = new Float32Array(totalGrains * 3);
@@ -858,9 +924,15 @@
             const duration = audioBuffer.duration;
             const colorObj = new THREE.Color();
 
+            // --- Premium Neon Galactic Palette ---
+            const colorCore    = new THREE.Color(0xff00aa); // Luminous Magenta Core
+            const colorMid     = new THREE.Color(0x7a00ff); // Electric Deep Violet
+            const colorOuter   = new THREE.Color(0x0055ff); // Vivid Royal Blue
+            const colorNeonPop = new THREE.Color(0x00f5ff); // Cyan highlight splash
+
             for (let i = 0; i < totalGrains; i++) {
                 const angle = Math.random() * Math.PI * 2;
-                const radius = 12 + Math.random() * 60; 
+                const radius = 10 + Math.random() * 60; 
                 const x = Math.cos(angle) * radius;
                 const z = Math.sin(angle) * radius;
                 const y = (Math.random() - 0.5) * 6;
@@ -872,10 +944,40 @@
                 const ratio = i / totalGrains;
                 const sampleOffset = ratio * duration; 
                 
-                colorObj.setHSL(0.05 + (ratio * 0.6), 0.9, 0.55);
-                colors[i * 3] = colorObj.r;
-                colors[i * 3 + 1] = colorObj.g;
-                colors[i * 3 + 2] = colorObj.b;
+                // --- THE SAUCE: TIMELINE PROFILE WITH SPATIAL JITTER ---
+                // Mix the track ratio with a touch of spatial noise so the gradient fields
+                // swirl softly together instead of forming rigid geometric walls.
+                const cloudNoise = Math.sin(angle * 2.0 + radius * 0.1) * 0.15;
+                const dynamicProgress = Math.min(Math.max(ratio + cloudNoise, 0.0), 1.0);
+
+                // Two-stage smooth blending across the main track duration
+                if (dynamicProgress < 0.5) {
+                    // Core to mid-track: Magenta transitioning to deep electric violet
+                    colorObj.copy(colorCore).lerp(colorMid, dynamicProgress * 2.0);
+                } else {
+                    // Mid-track to tail: Deep violet easing into rich royal blue
+                    colorObj.copy(colorMid).lerp(colorOuter, (dynamicProgress - 0.5) * 2.0);
+                }
+
+                // --- STELLAR INSTABILITY VARIETY ---
+                const varietySeed = Math.random();
+                if (varietySeed > 0.90) {
+                    // 10% of grains get a hyper-vibrant neon cyan tint for crisp contrast edges
+                    colorObj.lerp(colorNeonPop, 0.7);
+                } else if (varietySeed < 0.05) {
+                    // 5% are generated as blindingly hot white core stars right off the bat
+                    colorObj.setRGB(1.0, 1.0, 1.0);
+                }
+
+                // --- RADIAL LUMINOSITY FALLOFF ---
+                // Give the inner core region a higher default brightness multiplier to feed the bloom pass,
+                // while letting the outer blue edges stay rich, moody, and saturated.
+                const coreProximity = 1.0 - (radius / 70); 
+                const intensityMultiplier = 1.8 + (coreProximity * 1.6); // Inner ~3.4, Outer ~1.8
+
+                colors[i * 3]     = colorObj.r * intensityMultiplier;
+                colors[i * 3 + 1] = colorObj.g * intensityMultiplier;
+                colors[i * 3 + 2] = colorObj.b * intensityMultiplier;
 
                 granuleData.push({
                     x: x, y: y, z: z,
@@ -891,7 +993,7 @@
             const pTexture = createCircleTexture();
             
             const material = new THREE.PointsMaterial({
-                size: 2.2,
+                size: 2.4,             // Bumped up slightly so the HDR particles bloom beautifully
                 map: pTexture,
                 vertexColors: true,
                 transparent: true,
@@ -938,6 +1040,7 @@
             particleSystem = new THREE.Points(geometry, material);
             scene.add(particleSystem);
         }
+        
 
         function createCircleTexture() {
             const canvas = document.createElement('canvas');
@@ -959,6 +1062,12 @@
         // --- Processing Engine ---
         function scheduler() {
             if (!isPlaying) return;
+            
+            // Safety catch for background execution / tab throttling loops
+            if (nextGrainTime < audioCtx.currentTime) {
+                nextGrainTime = audioCtx.currentTime;
+            }
+
             while (nextGrainTime < audioCtx.currentTime + 0.08) {
                 spawnGrain(nextGrainTime);
                 nextGrainTime += (1.0 / params.density);
@@ -1061,7 +1170,9 @@
             requestAnimationFrame(animate);
             
             const deltaTime = Math.min(clock.getDelta(), 0.1); 
+            const elapsedTime = clock.getElapsedTime();
 
+            // --- Camera Look/Orbit Axis Modifications ---
             if (keys.ArrowLeft || keys.ArrowRight || keys.ArrowUp || keys.ArrowDown) {
                 const camOffset = new THREE.Vector3().subVectors(camera.position, controls.target);
                 
@@ -1079,6 +1190,30 @@
                 camera.position.copy(controls.target).add(camOffset);
             }
 
+            // --- Smooth Zoom Processing Engine ---
+            if (keys['+'] || keys['='] || keys['-']) {
+                // Get vector pointing from control target to current camera position
+                const zoomDirection = new THREE.Vector3().subVectors(camera.position, controls.target);
+                const currentDistance = zoomDirection.length();
+                
+                // Establish continuous calculation boundaries based on frame ticking rates
+                let distanceFactor = currentDistance;
+                if (keys['+'] || keys['=']) {
+                    distanceFactor -= ZOOM_SPEED * currentDistance * deltaTime;
+                }
+                if (keys['-']) {
+                    distanceFactor += ZOOM_SPEED * currentDistance * deltaTime;
+                }
+                
+                // Enforce minimum and maximum scalar constraint limits
+                distanceFactor = Math.max(MIN_ZOOM_DISTANCE, Math.min(MAX_ZOOM_DISTANCE, distanceFactor));
+                
+                // Rescale the directional offset vector and project back onto target coordinates
+                zoomDirection.normalize().multiplyScalar(distanceFactor);
+                camera.position.copy(controls.target).add(zoomDirection);
+            }
+
+            // --- Movement Physics Frame Steps ---
             const forward = new THREE.Vector3();
             camera.getWorldDirection(forward);
             forward.y = 0; 
@@ -1104,10 +1239,20 @@
             controls.target.y = 0;
             controls.update();
 
+            // --- Web Audio HRTF Listener Orientation Mapping ---
             if (audioCtx && pannerNode) {
                 const target = controls.target;
-                listenerMesh.position.copy(target);
                 
+                // Track visual core layout onto spatial matrix center
+                listenerGroup.position.copy(target);
+                
+                // Idle Core animations
+                coreMesh.scale.setScalar(1.0 + Math.sin(elapsedTime * 8.0) * 0.15);
+                midMesh.rotation.y -= deltaTime * 0.5;
+                midMesh.rotation.x += deltaTime * 0.2;
+                ringMesh1.rotation.z = elapsedTime * 0.5;
+                ringMesh2.rotation.z = -elapsedTime * 0.3;
+
                 globalRotationAngle += params.rotation;
 
                 const cosInv = Math.cos(-globalRotationAngle);
@@ -1128,8 +1273,6 @@
             }
 
             if (particleSystem) {
-                const elapsedTime = clock.getElapsedTime();
-
                 if (particleSystem.material.userData.shader) {
                     particleSystem.material.userData.shader.uniforms.uTime.value = elapsedTime;
                     particleSystem.material.userData.shader.uniforms.uRotation.value = globalRotationAngle;
@@ -1140,9 +1283,11 @@
                 particleSystem.material.opacity = 0.82 + Math.sin(elapsedTime * 0.8) * 0.08;
             }
 
-            renderer.render(scene, camera);
+            // Execute pass through Bloom composer engine pipeline
+            composer.render();
         }
         animate();
     </script>
+
 </body>
 </html>
