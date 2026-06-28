@@ -50,13 +50,29 @@
         }
 
         header {
-            background: linear-gradient(to bottom, rgba(5,5,10,0.8), rgba(5,5,10,0));
-            padding: 10px;
+            background: linear-gradient(to bottom, rgba(5,5,10,0.85), rgba(5,5,10,0));
+            padding: 15px;
             border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         h1 {
-            margin: 0 0 5px 0;
+            margin: 0;
             font-size: 1.5rem;
             font-weight: 300;
             letter-spacing: 2px;
@@ -73,9 +89,6 @@
 
         /* --- Navigation Back Button --- */
         .btn-back {
-            position: absolute;
-            left: 20px;
-            top: 100px;
             background: rgba(10, 10, 20, 0.6);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -98,20 +111,135 @@
             transform: translateX(-2px);
         }
 
-        /* --- Presets Sidebar Panel --- */
-        #presets-panel {
-            position: absolute;
-            left: 20px;
-            top: 150px;
+        /* --- Header Mini Dropdown (Hidden initially) --- */
+        #header-presets-container {
+            display: none;
+            align-items: center;
+            gap: 8px;
             background: rgba(10, 10, 20, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 4px 10px;
+        }
+
+        #header-presets-container.visible {
+            display: flex;
+        }
+
+        .mini-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8ab4f8;
+            font-weight: 600;
+        }
+
+        .preset-select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+            color: #e0e0e9;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .preset-select:hover {
+            background: rgba(138, 180, 248, 0.1);
+            border-color: #8ab4f8;
+        }
+
+        .preset-select option {
+            background: #0a0a14;
+            color: #e0e0e9;
+        }
+
+        .preset-select.loading {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        /* --- Central Gateway Frame (Holds Upload & Grid Presets) --- */
+        #gateway-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 380px;
+            z-index: 15;
+        }
+
+        #drop-zone {
+            width: 100%;
+            height: 200px;
+            border: 2px dashed #3c4043;
+            border-radius: 12px;
+            background: rgba(10, 10, 20, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #drop-zone.hover {
+            border-color: #8ab4f8;
+            background: rgba(20, 30, 50, 0.9);
+            box-shadow: 0 0 20px rgba(138, 180, 248, 0.3);
+        }
+
+        #drop-zone svg {
+            width: 44px;
+            height: 44px;
+            fill: #8ab4f8;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .btn-browse {
+            background: #2b3e66;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-browse:hover {
+            background: #3b568c;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        /* --- Grid Matrix Below Upload Box --- */
+        #presets-panel {
+            background: rgba(10, 10, 20, 0.8);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 15px;
-            width: 220px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
@@ -120,8 +248,14 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #8ab4f8;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
             font-weight: 600;
+        }
+
+        .presets-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .preset-btn {
@@ -144,12 +278,6 @@
             border-color: #8ab4f8;
         }
 
-        .preset-btn.active {
-            background: rgba(138, 180, 248, 0.25);
-            border-color: #8ab4f8;
-            box-shadow: 0 0 8px rgba(138, 180, 248, 0.3);
-        }
-
         .preset-btn.loading {
             opacity: 0.6;
             cursor: wait;
@@ -161,59 +289,7 @@
             color: #9aa0a6;
         }
 
-        #drop-zone {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 340px;
-            height: 220px;
-            border: 2px dashed #3c4043;
-            border-radius: 12px;
-            background: rgba(10, 10, 20, 0.85);
-            backdrop-filter: blur(8px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            text-align: center;
-            padding: 20px;
-        }
-
-        #drop-zone.hover {
-            border-color: #8ab4f8;
-            background: rgba(20, 30, 50, 0.9);
-            box-shadow: 0 0 20px rgba(138, 180, 248, 0.3);
-        }
-        #drop-zone svg {
-            width: 44px;
-            height: 44px;
-            fill: #8ab4f8;
-            margin-bottom: 10px;
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-        .btn-browse {
-            background: #2b3e66;
-            color: #fff;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.2s;
-        }
-        .btn-browse:hover {
-            background: #3b568c;
-        }
-        #file-input {
-            display: none;
-        }
+        /* --- Control Mechanics Layout --- */
         #controls-panel {
             background: rgba(10, 10, 20, 0.75);
             backdrop-filter: blur(12px);
@@ -221,7 +297,7 @@
             border-radius: 16px;
             padding: 20px;
             width: 100%;
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -230,20 +306,24 @@
             transform: translateY(150%);
             transition: transform 0.5s cubic-bezier(0.1, 1, 0.1, 1);
         }
+
         #controls-panel.visible {
             transform: translateY(0);
         }
+
         .control-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
+
         label {
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #9aa0a6;
         }
+
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
@@ -253,6 +333,7 @@
             border-radius: 3px;
             outline: none;
         }
+
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 16px;
@@ -263,19 +344,22 @@
             box-shadow: 0 0 8px rgba(138, 180, 248, 0.8);
             transition: transform 0.1s;
         }
+
         input[type="range"]::-webkit-slider-thumb:hover {
             transform: scale(1.2);
         }
+
         #status-text {
             font-size: 0.8rem;
             color: #ff8a8a;
             font-family: monospace;
             margin-top: 10px;
         }
+
         #instructions {
             position: absolute;
             right: 20px;
-            top: 20px;
+            top: 100px;
             background: rgba(10,10,20,0.5);
             padding: 10px 15px;
             border-radius: 6px;
@@ -293,33 +377,63 @@
 
     <div id="ui-overlay">
         <header class="interactive">
-            <h1>Granular Galaxy</h1>
-            <p id="file-info">Shatter music into stars</p>
+            <div class="header-left">
+                <h1>Granular Galaxy</h1>
+                <p id="file-info">Shatter music into stars</p>
+            </div>
+            
+            <div class="header-right">
+                <div id="header-presets-container">
+                    <span class="mini-label">Swap Track:</span>
+                    <select id="header-track-select" class="preset-select" onchange="handleDropdownSelection(this)">
+                        <option value="" disabled selected>Choose Track</option>
+                        <option value="world-between.mp3">Worlds Between</option>
+                        <option value="Best Day Yet.mp3">Best Day Yet</option>
+                        <option value="Blue Skies - Accidentals.mp3">Blue Skies</option>
+                        <option value="just more time.mp3">Just More Time</option>
+                        <option value="menu_music.mp3">TKart Menu Music</option>
+                    </select>
+                </div>
+            </div>
         </header>
 
-        <!-- Presets Selection Side-Matrix -->
-        <div id="presets-panel" class="interactive">
-            <div class="preset-title">Preset Tracks</div>
-            <button class="preset-btn" onclick="loadPresetTrack(0, 'world-between.mp3', 'Worlds Between')">
-                <span>Worlds Between</span>
-                <span class="preset-meta" id="meta-0">Click to play</span>
-            </button>
-            <button class="preset-btn" onclick="loadPresetTrack(1, 'Best Day Yet.mp3', 'Best Day Yet')">
-                <span>Best Day Yet</span>
-                <span class="preset-meta" id="meta-1">Click to play</span>
-            </button>
-            <button class="preset-btn" onclick="loadPresetTrack(2, 'Blue Skies - Accidentals.mp3', 'Blue Skies')">
-                <span>Blue Skies</span>
-                <span class="preset-meta" id="meta-2">Click to play</span>
-            </button>
-            <button class="preset-btn" onclick="loadPresetTrack(3, 'just more time.mp3', 'Just More Time')">
-                <span>Just More Time</span>
-                <span class="preset-meta" id="meta-3">Click to play</span>
-            </button>
-            <button class="preset-btn" onclick="loadPresetTrack(4, 'menu_music.mp3', 'TKart Menu Music')">
-                <span>TKart Menu Music</span>
-                <span class="preset-meta" id="meta-4">Click to play</span>
-            </button>
+        <div id="gateway-container" class="interactive">
+            <div id="drop-zone">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                </svg>
+                <p style="color: #fff; font-weight: 500; margin-bottom: 2px;">Drop an audio file here</p>
+                <p style="font-size: 0.75rem; color: #9aa0a6;">WAV, MP3, or OGG</p>
+                <button class="btn-browse" onclick="document.getElementById('file-input').click()">Or Choose File</button>
+                <input type="file" id="file-input" accept="audio/*">
+                <p id="status-text"></p>
+            </div>
+
+            <div id="presets-panel">
+                <div class="preset-title">Or Choose a Preset Track</div>
+                <div class="presets-grid">
+                    <button class="preset-btn" onclick="loadPresetTrack(0, 'world-between.mp3', 'Worlds Between')">
+                        <span>Worlds Between</span>
+                        <span class="preset-meta" id="meta-0">Click to play</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPresetTrack(1, 'Best Day Yet.mp3', 'Best Day Yet')">
+                        <span>Best Day Yet</span>
+                        <span class="preset-meta" id="meta-1">Click to play</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPresetTrack(2, 'Blue Skies - Accidentals.mp3', 'Blue Skies')">
+                        <span>Blue Skies</span>
+                        <span class="preset-meta" id="meta-2">Click to play</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPresetTrack(3, 'just more time.mp3', 'Just More Time')">
+                        <span>Just More Time</span>
+                        <span class="preset-meta" id="meta-3">Click to play</span>
+                    </button>
+                    <button class="preset-btn" onclick="loadPresetTrack(4, 'menu_music.mp3', 'TKart Menu Music')">
+                        <span>TKart Menu Music</span>
+                        <span class="preset-meta" id="meta-4">Click to play</span>
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div id="instructions">
@@ -327,17 +441,6 @@
             Arrow Keys: Orbit View Camera<br>
             Left-Click + Drag: Orbit View Mouse<br>
             Scroll: Zoom
-        </div>
-
-        <div id="drop-zone" class="interactive">
-            <svg viewBox="0 0 24 24">
-                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
-            </svg>
-            <p style="color: #fff; font-weight: 500; margin-bottom: 2px;">Drop an audio file here</p>
-            <p style="font-size: 0.75rem; color: #9aa0a6;">WAV, MP3, or OGG</p>
-            <button class="btn-browse" onclick="document.getElementById('file-input').click()">Or Choose File</button>
-            <input type="file" id="file-input" accept="audio/*">
-            <p id="status-text"></p>
         </div>
 
         <div id="controls-panel" class="interactive">
@@ -392,11 +495,14 @@
         };
 
         // UI elements
+        const gatewayContainer = document.getElementById('gateway-container');
         const dropZone = document.getElementById('drop-zone');
         const statusText = document.getElementById('status-text');
         const controlsPanel = document.getElementById('controls-panel');
         const fileInfo = document.getElementById('file-info');
         const fileInput = document.getElementById('file-input');
+        const headerPresets = document.getElementById('header-presets-container');
+        const headerSelect = document.getElementById('header-track-select');
 
         // --- Sync HTML Sliders with Default Params on Load ---
         function initSliderDefaults() {
@@ -443,6 +549,7 @@
         //Three.js Setup
         const container = document.getElementById('canvas-container'); 
         const scene = new THREE.Scene(); 
+        scene.fog = new THREE.FogExp2(0x020205, 0.005); 
 
         // camera setup
         const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
@@ -537,21 +644,35 @@
             masterGainNode.connect(audioCtx.destination);
         }
 
+        // --- Header Select Router Engine ---
+        function handleDropdownSelection(selectNode) {
+            const path = selectNode.value;
+            const text = selectNode.options[selectNode.selectedIndex].text;
+            if (path) {
+                executeAudioFetch(path, text);
+            }
+        }
+
         // --- Async Preset Track Loader ---
         async function loadPresetTrack(index, url, trackName) {
-            await initAudioContext();
-
-            // UI feedback management
+            // Reflect structural selection down inside the header selector element mapping
+            headerSelect.value = url;
+            
             const buttons = document.querySelectorAll('.preset-btn');
-            buttons.forEach(btn => btn.classList.remove('active', 'loading'));
+            buttons.forEach(btn => btn.classList.remove('loading'));
             
             const activeBtn = buttons[index];
-            activeBtn.classList.add('loading');
-            
-            const metaElements = document.querySelectorAll('.preset-meta');
-            metaElements.forEach((el, idx) => el.innerText = idx === index ? 'Loading track' : 'Click to play');
+            if(activeBtn) activeBtn.classList.add('loading');
 
-            fileInfo.innerText = `Loading preset: ${trackName}...`;
+            await executeAudioFetch(url, trackName);
+            if(activeBtn) activeBtn.classList.remove('loading');
+        }
+
+        // Core underlying Fetch routing pattern
+        async function executeAudioFetch(url, trackName) {
+            await initAudioContext();
+            headerSelect.classList.add('loading');
+            fileInfo.innerText = `Loading track: ${trackName}...`;
 
             try {
                 const response = await fetch(url);
@@ -562,13 +683,14 @@
                     audioBuffer = buffer;
                     generateGranularCloud();
                     
-                    dropZone.style.display = 'none';
+                    // Hide main landing view, present header quick-swap dropdown
+                    gatewayContainer.style.display = 'none';
+                    headerPresets.classList.add('visible');
+                    
                     controlsPanel.classList.add('visible');
                     document.getElementById('instructions').style.display = 'block';
                     
-                    activeBtn.classList.remove('loading');
-                    activeBtn.classList.add('active');
-                    document.getElementById(`meta-${index}`).innerText = 'Playing';
+                    headerSelect.classList.remove('loading');
                     fileInfo.innerText = `${trackName}`;
 
                     if (!isPlaying) {
@@ -577,16 +699,14 @@
                         scheduler();
                     }
                 }, function(err) {
-                    activeBtn.classList.remove('loading');
-                    document.getElementById(`meta-${index}`).innerText = 'Decode failed';
+                    headerSelect.classList.remove('loading');
                     fileInfo.innerText = "Error parsing file format.";
                     console.error(err);
                 });
 
             } catch (error) {
-                activeBtn.classList.remove('loading');
-                document.getElementById(`meta-${index}`).innerText = 'File missing';
-                fileInfo.innerText = "Could not find file in content/";
+                headerSelect.classList.remove('loading');
+                fileInfo.innerText = "Could not find asset file.";
                 console.error("Preset asset fetch error: ", error);
             }
         }
@@ -624,10 +744,7 @@
         function processFile(file) {
             statusText.innerText = "Parsing audio array...";
             fileInfo.innerText = `${file.name}`;
-            
-            // Clear active state highlights from sidebar elements
-            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.preset-meta').forEach(el => el.innerText = 'Click to play');
+            headerSelect.value = ""; // Reset fallback picker
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -635,7 +752,9 @@
                     audioBuffer = buffer;
                     generateGranularCloud();
                     
-                    dropZone.style.display = 'none';
+                    gatewayContainer.style.display = 'none';
+                    headerPresets.classList.add('visible');
+                    
                     controlsPanel.classList.add('visible');
                     document.getElementById('instructions').style.display = 'block';
                     
@@ -710,7 +829,6 @@
                 depthWrite: false      
             });
 
-            // Shader injection
             material.onBeforeCompile = function (shader) {
                 shader.uniforms.uTime = { value: 0 };
                 shader.uniforms.uRotation = { value: 0 };
@@ -777,7 +895,6 @@
             setTimeout(scheduler, 20);
         }
 
-        // Weight mapping algorithm & coordinate translation setup
         function spawnGrain(time) {
             if (!audioBuffer || !particleSystem) return;
 
@@ -838,7 +955,6 @@
 
             const individualPanner = audioCtx.createPanner();
             individualPanner.panningModel = 'HRTF';
-            
             individualPanner.setPosition(chosen.rx, chosen.ry, chosen.rz);
 
             source.connect(gainNode);
@@ -875,7 +991,6 @@
             
             const deltaTime = Math.min(clock.getDelta(), 0.1); 
 
-            // --- 1. Camera View Control via Arrow Keys ---
             if (keys.ArrowLeft || keys.ArrowRight || keys.ArrowUp || keys.ArrowDown) {
                 const camOffset = new THREE.Vector3().subVectors(camera.position, controls.target);
                 
@@ -893,7 +1008,6 @@
                 camera.position.copy(controls.target).add(camOffset);
             }
 
-            // --- 2. Relative Movement Calculations (WASD only) ---
             const forward = new THREE.Vector3();
             camera.getWorldDirection(forward);
             forward.y = 0; 
@@ -909,7 +1023,6 @@
             if (keys.a) moveDirection.sub(right);
             moveDirection.normalize();
 
-            // --- 3. Velocity and Translation Processing ---
             const targetVelocity = moveDirection.multiplyScalar(moveSpeed);
             velocity.lerp(targetVelocity, friction);
 
@@ -920,7 +1033,6 @@
             controls.target.y = 0;
             controls.update();
 
-            // --- 4. Synchronize Audio Listener ---
             if (audioCtx && pannerNode) {
                 const target = controls.target;
                 listenerMesh.position.copy(target);
@@ -944,7 +1056,6 @@
                 audioCtx.listener.setOrientation(orientedX, dir.y, orientedZ, 0, 1, 0);
             }
 
-            // --- 5. GPU Shimmer/Spin Updates ---
             if (particleSystem) {
                 const elapsedTime = clock.getElapsedTime();
 
