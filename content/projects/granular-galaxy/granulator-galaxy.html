@@ -705,7 +705,7 @@
         listenerGroup.add(ringMesh2);
 
         function generateBackgroundStars() {
-            const starCount = 15000;
+            const starCount = 30000;
             const geom = new THREE.BufferGeometry();
             const positions = new Float32Array(starCount * 3);
 
@@ -884,7 +884,7 @@
         });
 
         function processFile(file) {
-            statusText.innerText = "Parsing audio array...";
+            statusText.innerText = "Loading audio";
             fileInfo.innerText = `${file.name}`;
             headerSelect.value = ""; 
 
@@ -906,7 +906,7 @@
                     }
                 }, function(err) {
                     statusText.style.color = "#ff8a8a";
-                    statusText.innerText = "Decode failed. Use a standard WAV/MP3.";
+                    statusText.innerText = "Can't read your file :( Use a standard WAV/MP3.";
                     console.error(err);
                 });
             };
